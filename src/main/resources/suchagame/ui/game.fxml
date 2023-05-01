@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.canvas.Canvas?>
+
+
+<StackPane>
+    <TilePane id="map_layer_1"> </TilePane>
+    <TilePane id="map_layer_2"> </TilePane>
+    <Canvas id="game_canvas" width="1920" height="1080"> </Canvas>
+</StackPane>
