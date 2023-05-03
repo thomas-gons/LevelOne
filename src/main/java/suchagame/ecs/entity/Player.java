@@ -15,7 +15,7 @@ public class Player extends Entity {
                 8, 1, 0, 14));
         this.addComponent(new MovementComponent(3));
         this.addComponent(new PhysicComponent(
-                25, 35, -12, 18,
+                25, 40, -12, -15,
                 20, 0.5f, 0.5f, 0.5f, 0.5f));
     }
 }

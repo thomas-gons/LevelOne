@@ -3,6 +3,7 @@ package suchagame.ui;
 import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.util.Pair;
 import suchagame.ecs.component.TransformComponent;
 import suchagame.ecs.entity.MapEntity;
@@ -18,13 +19,15 @@ public class Camera {
     public static float scale = 5f;
     public static int relativeWidth = (int) (Game.width / Camera.scale);
     public static int relativeHeight = (int) (Game.height / Camera.scale);
+
+    public static BoundingBox viewport = new BoundingBox(0, 0, relativeWidth, relativeHeight);
     private final Map<Integer, Pair<Image, int[]>> tileSetsSpriteSheet = new HashMap<>();
     private int tileCountRows = (int) Math.ceil((double) relativeHeight / MapEntity.defaultTileSize);
     private int tileCountCols = (int) Math.ceil((double) relativeWidth / MapEntity.defaultTileSize);
     private int tileSize = Math.max(Game.width / tileCountCols, Game.height / tileCountRows);
 
-    private Vector2<Integer> positionInTiles = new Vector2<>(0, 0);
-    private Vector2<Float> offsetInTiles = new Vector2<>(0f, 0f);
+    private final Vector2<Float> position = new Vector2<>(0f, 0f);
+    private final Vector2<Float> offsetInTiles = new Vector2<>(0f, 0f);
     public Camera() {
         this.loadTileSets();
         Game.freeSpace = new BoundingBox(
@@ -48,38 +51,49 @@ public class Camera {
         Vector2<Float> playerPosition = Player.player.getComponent(TransformComponent.class).getPosition();
         this.offsetInTiles.set(0f, 0f);
         if (Game.freeSpace.getMinX() > playerPosition.getX())
-            this.positionInTiles.setX(0);
+            this.position.setX(0f);
         else if (Game.freeSpace.getMaxX() < playerPosition.getX())
-            this.positionInTiles.setX((int) (Game.freeSpace.getWidth() / MapEntity.defaultTileSize));
+            this.position.setX((float) Game.freeSpace.getWidth() / MapEntity.defaultTileSize);
         else {
-            this.positionInTiles.setX((int) ((playerPosition.getX() - relativeWidth / 2) / MapEntity.defaultTileSize));
+            this.position.setX(playerPosition.getX() - relativeWidth / 2);
             this.offsetInTiles.setX((playerPosition.getX() - (float) relativeWidth / 2) % MapEntity.defaultTileSize * scale);
         }
 
         if (Game.freeSpace.getMinY() > playerPosition.getY())
-            this.positionInTiles.setY(0);
+            this.position.setY(0f);
         else if (Game.freeSpace.getMaxY() < playerPosition.getY())
-            this.positionInTiles.setY((int) (Game.freeSpace.getHeight() / MapEntity.defaultTileSize));
+            this.position.setY((float) Game.freeSpace.getHeight() / MapEntity.defaultTileSize);
         else {
-            this.positionInTiles.setY((int) ((playerPosition.getY() - relativeHeight / 2) / MapEntity.defaultTileSize));
+            this.position.setY(playerPosition.getY() - relativeHeight / 2);
             this.offsetInTiles.setY((playerPosition.getY() - (float) relativeHeight / 2) % MapEntity.defaultTileSize * scale);
         }
+
+        Camera.viewport = new BoundingBox(
+                this.position.getX(),
+                this.position.getY(),
+                relativeWidth,
+                relativeHeight
+        );
     }
    public void render(GraphicsContext gc) {
         update();
 
-        int boundsRows = (this.positionInTiles.getY() + tileCountRows) >= MapEntity.globalTileCountRows ?
+        Vector2<Integer> positionInTiles = new Vector2<>(
+                (int) (this.position.getX() / MapEntity.defaultTileSize),
+                (int) (this.position.getY() / MapEntity.defaultTileSize)
+        );
+        int boundsRows = (positionInTiles.getY() + tileCountRows) >= MapEntity.globalTileCountRows ?
                 tileCountRows: tileCountRows + 1;
 
-        int boundsCols = (this.positionInTiles.getX() + tileCountCols) >= MapEntity.globalTileCountCols ?
+        int boundsCols = (positionInTiles.getX() + tileCountCols) >= MapEntity.globalTileCountCols ?
                 tileCountCols: tileCountCols + 1;
 
         List<int[][]> layers = MapEntity.map.getLayers();
         for (int layerID = 0; layerID < MapEntity.layersCount; layerID++) {
             int[][] layer = layers.get(layerID);
 
-            for (int y = this.positionInTiles.getY(), i = 0; i < boundsRows; y++, i++) {
-                for (int x = this.positionInTiles.getX(), j = 0; j < boundsCols; x++, j++) {
+            for (int y = positionInTiles.getY(), i = 0; i < boundsRows; y++, i++) {
+                for (int x = positionInTiles.getX(), j = 0; j < boundsCols; x++, j++) {
                     gc.drawImage(
                             tileSetsSpriteSheet.get(layerID).getKey(),
                             (layer[y][x] % tileSetsSpriteSheet.get(layerID).getValue()[1]) * MapEntity.defaultTileSize,
@@ -104,14 +118,17 @@ public class Camera {
 //        }
     }
 
-    public void setScale(float scale) {
-        Camera.scale = scale;
-        Camera.relativeWidth = (int) (Game.width * Camera.scale);
-        Camera.relativeHeight = (int) (Game.height * Camera.scale);
-        this.tileCountRows = (int) Math.ceil(Game.height / (double) relativeHeight);
-        this.tileCountCols = (int) Math.ceil(Game.width / (double) relativeWidth);
-        this.tileSize = Math.max(Game.width / tileCountCols, Game.height / tileCountRows);
+    public void alterScale(float delta) {
+        Camera.scale += delta;
+        Camera.relativeWidth = (int) (Game.width / Camera.scale);
+        Camera.relativeHeight = (int) (Game.height / Camera.scale);
+        this.tileCountRows =  (int) Math.ceil((double) relativeHeight / MapEntity.defaultTileSize);
+        this.tileCountCols = (int) Math.ceil((double) relativeWidth / MapEntity.defaultTileSize);
+        this.tileSize =  Math.max(Game.width / tileCountCols, Game.height / tileCountRows);
+    }
 
+    public Vector2<Float> getPosition() {
+        return position;
     }
 
 }

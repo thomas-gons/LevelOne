@@ -36,4 +36,28 @@ public class PhysicComponent extends Component {
                 boundingBox.getHeight()
         );
     }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
+
+    public float getMass() {
+        return mass;
+    }
+
+    public float getRigidness() {
+        return rigidness;
+    }
+
+    public float getFriction() {
+        return friction;
+    }
+
+    public float getElasticity() {
+        return elasticity;
+    }
+
+    public float getCoefficientOfRestitution() {
+        return coefficientOfRestitution;
+    }
 }

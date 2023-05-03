@@ -9,7 +9,7 @@ import suchagame.ecs.system.MovementSystem;
 
 public class GameLoop {
     Timeline gameLoop;
-    static final int framerate = 120;
+    static final int framerate = 60;
     public static long lastTime = System.currentTimeMillis();
     public GameLoop() {
         this.gameLoop =  new Timeline(new KeyFrame(Duration.millis((double) 1000 / framerate), event -> {

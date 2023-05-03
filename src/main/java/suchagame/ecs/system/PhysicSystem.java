@@ -50,7 +50,7 @@ public class PhysicSystem {
                 checkPosition.getX() > Game.width || checkPosition.getY() > Game.height) {
             return true;
         }
-//          check collision with map
+        // check collision with map
         Vector2<Integer> upperLeftInTiles = new Vector2<>(
                 (int) entityBB.getMinX() / MapEntity.defaultTileSize,
                 (int) entityBB.getMinY() / MapEntity.defaultTileSize

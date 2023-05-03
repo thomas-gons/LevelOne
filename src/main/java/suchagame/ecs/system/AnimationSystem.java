@@ -15,7 +15,7 @@ public class AnimationSystem extends System {
             long now = java.lang.System.currentTimeMillis();
             if (now - lastUpdate > (1000 / animationComponent.getFramerate())) {
                 animationComponent.setCurrentFrame((animationComponent.getCurrentFrame() + 1) % animationComponent.getFrameCount());
-                graphicComponent.setX(graphicComponent.getWidth() * animationComponent.getCurrentFrame());
+                graphicComponent.getPosition().setX(graphicComponent.getWidth() * animationComponent.getCurrentFrame());
                 lastUpdate = now;
             }
         }

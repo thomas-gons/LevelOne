@@ -8,6 +8,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import suchagame.ecs.EntityManager;
@@ -38,9 +40,17 @@ public class Game extends Application {
         gc.setImageSmoothing(false);
         MapEntity.map = new MapEntity();
         EntityManager.instance.addEntity(Player.player);
-//        EntityManager.instance.addEntity(new Mob());
+        EntityManager.instance.addEntity(new Mob());
         EntityManager.instance.addEntity(MapEntity.map);
         scene = new Scene(root, width, height);
+        scene.addEventHandler(ScrollEvent.SCROLL, event -> {
+            camera.alterScale((float) event.getDeltaY() / 1000);
+        });
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.SPACE) {
+                System.out.println(Camera.viewport);
+            }
+        });
         new InputSystem(scene);
         new GameLoop();
         stage.setScene(scene);

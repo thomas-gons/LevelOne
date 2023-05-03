@@ -10,6 +10,12 @@ public class Vector2<T extends Number> {
         this.y = y;
     }
 
+    public float fastDistance(Vector2<T> other) {
+        float dx = Math.abs(this.x.floatValue() - other.x.floatValue());
+        float dy = Math.abs(this.y.floatValue() - other.y.floatValue());
+        return (dx + dy) / 1.4142f;
+    }
+
     public void set(T x, T y) {
         this.x = x;
         this.y = y;
@@ -41,4 +47,5 @@ public class Vector2<T extends Number> {
     public String toString() {
         return "(" + this.x + ", " + this.y + ")";
     }
+
 }

@@ -4,18 +4,18 @@ package suchagame.ecs.component;
 import javafx.scene.image.Image;
 import suchagame.ui.Game;
 import suchagame.utils.Utils;
+import suchagame.utils.Vector2;
 
 public class GraphicComponent extends Component {
     private final Image sprite;
     private int width, height;
-    private int x, y;
+    private Vector2<Integer> position;
 
     public GraphicComponent(String spritePath) {
         this.sprite = new Image(Utils.getPathResource(Game.class, spritePath));
         this.width = (int) sprite.getWidth();
         this.height = (int) sprite.getHeight();
-        this.x = 0;
-        this.y = 0;
+        this.position = new Vector2<>(0, 0);
     }
 
     public Image getSprite() {
@@ -38,19 +38,11 @@ public class GraphicComponent extends Component {
         this.height = height;
     }
 
-    public int getX() {
-        return x;
+    public Vector2<Integer> getPosition() {
+        return position;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+    public void setPosition(Vector2<Integer> position) {
+        this.position = position;
     }
 }

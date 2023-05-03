@@ -1,5 +1,7 @@
 package suchagame.ecs.component;
 
+import suchagame.utils.Vector2;
+
 public class AnimationComponent extends Component {
     public static final Class<? extends Component> dependency = GraphicComponent.class;
     private int currentFrame;
@@ -14,8 +16,10 @@ public class AnimationComponent extends Component {
         this.framerate = framerate;
         graphicComponent.setWidth(graphicComponent.getWidth() / this.frameCount);
         graphicComponent.setHeight(graphicComponent.getHeight() / spriteSheetRow);
-        graphicComponent.setX(graphicComponent.getWidth() * initFrame);
-        graphicComponent.setY(graphicComponent.getHeight() * (spriteSheetRow - 1));
+        graphicComponent.setPosition(new Vector2<>(
+                graphicComponent.getWidth() * initFrame,
+                graphicComponent.getHeight() * (spriteSheetRow - 1))
+        );
     }
 
     public int getCurrentFrame() {

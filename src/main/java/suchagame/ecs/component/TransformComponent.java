@@ -33,7 +33,7 @@ public class TransformComponent extends Component {
     }
 
     public Vector2<Float> getVirtualPosition() {
-        return new Vector2<>(this.virtualPosition.getX(), this.virtualPosition.getY());
+        return this.virtualPosition;
     }
 
     public void setVirtualPosition(Vector2<Float> virtualPosition) {
