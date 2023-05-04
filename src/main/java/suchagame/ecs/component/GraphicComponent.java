@@ -9,13 +9,13 @@ import suchagame.utils.Vector2;
 public class GraphicComponent extends Component {
     private final Image sprite;
     private int width, height;
-    private Vector2<Integer> position;
+    private Vector2<Integer> origin;
 
     public GraphicComponent(String spritePath) {
-        this.sprite = new Image(Utils.getPathResource(Game.class, spritePath));
+        this.sprite = new Image(Utils.getPathResource(Game.class, "images/" + spritePath));
         this.width = (int) sprite.getWidth();
         this.height = (int) sprite.getHeight();
-        this.position = new Vector2<>(0, 0);
+        this.origin = new Vector2<>(0, 0);
     }
 
     public Image getSprite() {
@@ -38,11 +38,11 @@ public class GraphicComponent extends Component {
         this.height = height;
     }
 
-    public Vector2<Integer> getPosition() {
-        return position;
+    public Vector2<Integer> getOrigin() {
+        return origin;
     }
 
-    public void setPosition(Vector2<Integer> position) {
-        this.position = position;
+    public void setOrigin(Vector2<Integer> new_origin) {
+        this.origin = new_origin;
     }
 }

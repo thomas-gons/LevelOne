@@ -9,7 +9,7 @@ import suchagame.utils.Vector2;
 
 public class MovementSystem extends System {
     public static void update() {
-        for (Entity entity : EntityManager.instance.getAllWithComponent(MovementComponent.class)) {
+        for (Entity entity : EntityManager.instance.getAllWithComponent(TransformComponent.class)) {
             if (entity instanceof Mob) {
                 updateMob((Mob) entity);
             } else {
@@ -19,9 +19,9 @@ public class MovementSystem extends System {
     }
 
     public static void updatePlayer(Player player) {
-        TransformComponent transformComponent = (TransformComponent) player.getComponent(TransformComponent.class);
-        InputComponent inputComponent = (InputComponent) player.getComponent(InputComponent.class);
-        MovementComponent movementComponent = (MovementComponent) player.getComponent(MovementComponent.class);
+        TransformComponent transformComponent = player.getComponent(TransformComponent.class);
+        InputComponent inputComponent = player.getComponent(InputComponent.class);
+        float speed = player.getComponent(StatsComponent.class).getStat("spd");
 
         float dx = 0, dy = 0;
         if (inputComponent.keyPressed.get(KeyCode.Z)) dy -= 1;
@@ -35,12 +35,11 @@ public class MovementSystem extends System {
         }
 
         Vector2<Float> checkPosition = transformComponent.getPosition();
-        checkPosition.setX(checkPosition.getX() + dx * movementComponent.getVelocity());
-        checkPosition.setY(checkPosition.getY() + dy * movementComponent.getVelocity());
+        checkPosition.setX(checkPosition.getX() + dx * speed);
+        checkPosition.setY(checkPosition.getY() + dy * speed);
 
-        if (!PhysicSystem.checkCollision(player, checkPosition)) {
+        if (!PhysicSystem.checkCollision(player, checkPosition))
             (player.getComponent(TransformComponent.class)).setPosition(checkPosition);
-        }
     }
 
     public static void updateMob(Mob mob) {

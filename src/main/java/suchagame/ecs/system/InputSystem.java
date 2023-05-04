@@ -16,7 +16,7 @@ public class InputSystem extends System {
            throw new IllegalArgumentException("Node cannot be null");
        }
        for (Entity entity : EntityManager.instance.getAllWithComponent(InputComponent.class)) {
-           InputComponent inputComponent = (InputComponent) entity.getComponent(InputComponent.class);
+           InputComponent inputComponent = entity.getComponent(InputComponent.class);
            Player player = EntityManager.instance.getPlayer();
            scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                inputComponent.keyPressed.put(event.getCode(), true);

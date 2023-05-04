@@ -108,14 +108,6 @@ public class Camera {
                 }
             }
         }
-//        gc.setLineWidth(1);
-//        gc.setStroke(Color.LAWNGREEN);
-//        for (int i = 0; i <= MapEntity.globalTileCountRows; i++) {
-//            gc.strokeLine(0, i * tileSize - this.position.getX(), Game.width, i * tileSize - this.position.getX());
-//        }
-//        for (int i = 0; i < MapEntity.globalTileCountCols; i++) {
-//            gc.strokeLine(i * tileSize - this.position.getY(), 0, i * tileSize - this.position.getY(), Game.height);
-//        }
     }
 
     public void alterScale(float delta) {

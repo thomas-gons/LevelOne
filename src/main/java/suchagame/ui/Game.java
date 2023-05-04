@@ -31,6 +31,8 @@ public class Game extends Application {
     public static GraphicsContext gc;
     public static Camera camera = new Camera();
     public static BoundingBox freeSpace;
+
+    public static boolean lightEnabled = true;
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(Game.class.getResource("game.fxml"));
@@ -39,16 +41,20 @@ public class Game extends Application {
         gc = canvas.getGraphicsContext2D();
         gc.setImageSmoothing(false);
         MapEntity.map = new MapEntity();
-        EntityManager.instance.addEntity(Player.player);
-        EntityManager.instance.addEntity(new Mob());
         EntityManager.instance.addEntity(MapEntity.map);
+        EntityManager.instance.addEntity(Player.player);
+        for (int i = 0; i < 250; i++) {
+            EntityManager.instance.addEntity(new Mob());
+        }
+
         scene = new Scene(root, width, height);
         scene.addEventHandler(ScrollEvent.SCROLL, event -> {
             camera.alterScale((float) event.getDeltaY() / 1000);
         });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.SPACE) {
-                System.out.println(Camera.viewport);
+                Game.lightEnabled = !Game.lightEnabled;
+                Game.root.setEffect(null);
             }
         });
         new InputSystem(scene);

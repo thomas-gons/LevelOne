@@ -2,39 +2,70 @@ package suchagame.ecs.component;
 
 import suchagame.utils.Vector2;
 
+import java.util.Arrays;
+
 public class AnimationComponent extends Component {
-    public static final Class<? extends Component> dependency = GraphicComponent.class;
-    private int currentFrame;
-    private final int frameCount;
     private final int framerate;
+    private ACTION currentAction;
+    private int currentFrame;
+    private final int[] framesCountPerRow;
+    private long lastUpdate = java.lang.System.currentTimeMillis();
 
-    public AnimationComponent(GraphicComponent graphicComponent, int frameCount, int spriteSheetRow,
-                              int initFrame, int framerate) {
 
-        this.currentFrame = initFrame;
-        this.frameCount = frameCount;
+    public AnimationComponent(
+            GraphicComponent graphicComponent, int framerate,
+            ACTION initAction, int initFrame,
+            int[] framesCountPerRow
+    ) {
         this.framerate = framerate;
-        graphicComponent.setWidth(graphicComponent.getWidth() / this.frameCount);
-        graphicComponent.setHeight(graphicComponent.getHeight() / spriteSheetRow);
-        graphicComponent.setPosition(new Vector2<>(
+        this.currentAction = initAction;
+        this.currentFrame = (initFrame != -1) ?
+                initFrame : (int) (Math.random() * framesCountPerRow[initAction.ordinal()]);
+
+        this.framesCountPerRow = framesCountPerRow;
+        graphicComponent.setWidth(graphicComponent.getWidth() / Arrays.stream(framesCountPerRow).max().getAsInt());
+        graphicComponent.setHeight(graphicComponent.getHeight() / framesCountPerRow.length);
+        graphicComponent.setOrigin(new Vector2<>(
                 graphicComponent.getWidth() * initFrame,
-                graphicComponent.getHeight() * (spriteSheetRow - 1))
+                graphicComponent.getHeight() * initAction.ordinal()
+                )
         );
     }
 
-    public int getCurrentFrame() {
-        return currentFrame;
-    }
-
-    public void setCurrentFrame(int frame) {
-        this.currentFrame = frame;
+    public enum ACTION {
+        IDLE,
+        ATTACK,
+        DEAD,
     }
 
     public int getFramerate() {
         return framerate;
     }
+    public int getCurrentFrame() {
+        return currentFrame;
+    }
 
-    public int getFrameCount() {
-        return frameCount;
+    public void setCurrentFrameToNext() {
+        this.currentFrame = (currentFrame + 1) % framesCountPerRow[currentAction.ordinal()];
+    }
+
+    public int getFrameCount(ACTION action) {
+        return framesCountPerRow[action.ordinal()];
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public ACTION getCurrentAction() {
+        return currentAction;
+    }
+
+    public void setCurrentAction(ACTION action) {
+        this.currentAction = action;
     }
 }

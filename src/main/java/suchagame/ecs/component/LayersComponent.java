@@ -80,7 +80,7 @@ public class LayersComponent extends Component {
     }
 
     public int getTile(int layerID, Vector2<Float> position) {
-        return layers.get(layerID)[position.getX().intValue() / MapEntity.defaultTileSize][position.getY().intValue() / MapEntity.defaultTileSize];
+        return layers.get(layerID)[position.getY().intValue() / MapEntity.defaultTileSize][position.getX().intValue() / MapEntity.defaultTileSize];
     }
 
     public int[][] getLayer(int layerID) {
@@ -94,4 +94,5 @@ public class LayersComponent extends Component {
     public boolean[][] getCollisionLayerCheck() {
          return this.collisionLayerCheck;
     }
+
 }

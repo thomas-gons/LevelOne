@@ -2,6 +2,7 @@ package suchagame.ecs.component;
 
 
 import javafx.geometry.Rectangle2D;
+import suchagame.ecs.entity.MapEntity;
 import suchagame.utils.Vector2;
 
 
@@ -13,13 +14,15 @@ public class TransformComponent extends Component {
         this.position = new Vector2<>(x, y);
     }
 
-    public TransformComponent(LayersComponent layersComponent, Rectangle2D area) {
+    public TransformComponent(Rectangle2D area) {
+        LayersComponent layersComponent = MapEntity.map.getComponent(LayersComponent.class);
+
         // rejection sampling
         Vector2<Float> testPosition = new Vector2<>(0f, 0f);
         do {
             testPosition.setX((float) (Math.random() * area.getWidth() + area.getMinX()));
             testPosition.setY((float) (Math.random() * area.getHeight() + area.getMinY()));
-        } while (layersComponent.getTile(2, testPosition) != 0);
+        } while (layersComponent.getTile(1, testPosition) != 0);
 
         this.position = testPosition;
     }

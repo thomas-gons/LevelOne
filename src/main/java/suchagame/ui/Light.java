@@ -8,6 +8,7 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import suchagame.ecs.EntityManager;
+import suchagame.ecs.component.GraphicComponent;
 import suchagame.ecs.component.TransformComponent;
 import suchagame.ecs.entity.Player;
 import suchagame.utils.Vector2;
@@ -28,11 +29,12 @@ public class Light {
             lastTimeShimmering = System.currentTimeMillis();
         }
         Vector2<Float> virtualPosition = Player.player.getComponent(TransformComponent.class).getVirtualPosition();
+        GraphicComponent graphicComponent = Player.player.getComponent(GraphicComponent.class);
         RadialGradient gradient = new RadialGradient(
                 0,
                 0,
-                virtualPosition.getX() + 110,
-                virtualPosition.getY() + 200,
+                virtualPosition.getX() + graphicComponent.getWidth() * Camera.scale / 2,
+                virtualPosition.getY() + (graphicComponent.getHeight() + 15) * Camera.scale / 2,
                 radius,
                 false,
                 CycleMethod.NO_CYCLE,

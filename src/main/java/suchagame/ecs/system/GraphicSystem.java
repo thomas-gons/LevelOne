@@ -1,11 +1,11 @@
 package suchagame.ecs.system;
 
 import javafx.geometry.BoundingBox;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import suchagame.ecs.EntityManager;
 import suchagame.ecs.component.GraphicComponent;
 import suchagame.ecs.component.InputComponent;
+import suchagame.ecs.component.PhysicComponent;
 import suchagame.ecs.component.TransformComponent;
 import suchagame.ecs.entity.Entity;
 import suchagame.ui.Camera;
@@ -26,8 +26,8 @@ public class GraphicSystem extends System {
                 continue;
             gc.drawImage(
                     graphicComponent.getSprite(),
-                    graphicComponent.getPosition().getX(),
-                    graphicComponent.getPosition().getY(),
+                    graphicComponent.getOrigin().getX(),
+                    graphicComponent.getOrigin().getY(),
                     graphicComponent.getWidth(),
                     graphicComponent.getHeight(),
                     virtualPosition.getX(),
@@ -48,29 +48,42 @@ public class GraphicSystem extends System {
 
              virtualPosition.setX((position.getX() > Game.freeSpace.getMinX() && position.getX() < Game.freeSpace.getMaxX()) ?
                      (Game.width - graphicComponent.getWidth() * Camera.scale) / 2:
-                     (float) (Math.abs(position.getX() - viewport.getMinX() - (float) graphicComponent.getWidth() / 2) * Camera.scale));
+                     (float) (position.getX() - viewport.getMinX() - (float) graphicComponent.getWidth() / 2) * Camera.scale);
 
              virtualPosition.setY((position.getY() > Game.freeSpace.getMinY() && position.getY() < Game.freeSpace.getMaxY()) ?
                      (Game.height - graphicComponent.getHeight() * Camera.scale) / 2:
-                     (float) (Math.abs(position.getY() - viewport.getMinY() - (float) graphicComponent.getHeight() / 2) * Camera.scale));
+                     (float) (position.getY() - viewport.getMinY() - (float) graphicComponent.getHeight() / 2) * Camera.scale);
 
 
          } else if (entity.hasComponent(TransformComponent.class)) {
-             Vector2<Float> entityPosition = entity.getComponent(TransformComponent.class).getPosition();
-             if (viewport.contains(new Point2D(
-                     entityPosition.getX() + graphicComponent.getWidth(),
-                     entityPosition.getY() + graphicComponent.getWidth()))) {
-
+             BoundingBox boundingBox = entity.getComponent(PhysicComponent.class).getBoundingBox();
+             if (viewport.intersects(new BoundingBox(
+                        position.getX(),
+                        position.getY(),
+                        boundingBox.getWidth(),
+                        boundingBox.getHeight()
+             ))) {
                 virtualPosition.setX(
-                        (float) (Math.abs(position.getX() - viewport.getMinX() - (float) graphicComponent.getWidth() / 2) * Camera.scale)
+                        (float) (position.getX() - viewport.getMinX() - graphicComponent.getWidth() / 2f) * Camera.scale
                 );
                 virtualPosition.setY(
-                        (float) (Math.abs(position.getY() - viewport.getMinY() - (float) graphicComponent.getHeight() / 2) * Camera.scale)
+                        (float) ((position.getY() - viewport.getMinY() - graphicComponent.getHeight() * 0.9f) * Camera.scale)
                 );
              } else {
                 virtualPosition.setX(NaN);
                 virtualPosition.setY(NaN);
              }
          }
+    }
+
+    public static void render_bounding_boxes(GraphicsContext gc) {
+        for (Entity entity : EntityManager.instance.getAllWithComponent(GraphicComponent.class)) {
+            Vector2<Float> virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
+            BoundingBox boundingBox = entity.getComponent(PhysicComponent.class).getBoundingBox();
+            if (virtualPosition.getX() == NaN || virtualPosition.getY() == NaN)
+                continue;
+            gc.setStroke(javafx.scene.paint.Color.RED);
+            gc.setLineWidth(2);
+        }
     }
 }
