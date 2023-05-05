@@ -17,7 +17,7 @@ public class Player extends Entity {
         this.addComponent(new GraphicComponent("flame.png"));
         this.addComponent(new AnimationComponent(
                 this.getComponent(GraphicComponent.class),
-                8, ACTION.IDLE, 0,
+                12, ACTION.IDLE, 0,
                 new int[]{8}
         ));
 

@@ -53,7 +53,7 @@ public class Camera {
         if (Game.freeSpace.getMinX() > playerPosition.getX())
             this.position.setX(0f);
         else if (Game.freeSpace.getMaxX() < playerPosition.getX())
-            this.position.setX((float) Game.freeSpace.getWidth() / MapEntity.defaultTileSize);
+            this.position.setX((float) Game.freeSpace.getWidth());
         else {
             this.position.setX(playerPosition.getX() - relativeWidth / 2);
             this.offsetInTiles.setX((playerPosition.getX() - (float) relativeWidth / 2) % MapEntity.defaultTileSize * scale);
@@ -62,7 +62,7 @@ public class Camera {
         if (Game.freeSpace.getMinY() > playerPosition.getY())
             this.position.setY(0f);
         else if (Game.freeSpace.getMaxY() < playerPosition.getY())
-            this.position.setY((float) Game.freeSpace.getHeight() / MapEntity.defaultTileSize);
+            this.position.setY((float) Game.freeSpace.getHeight());
         else {
             this.position.setY(playerPosition.getY() - relativeHeight / 2);
             this.offsetInTiles.setY((playerPosition.getY() - (float) relativeHeight / 2) % MapEntity.defaultTileSize * scale);
@@ -114,6 +114,12 @@ public class Camera {
         Camera.scale += delta;
         Camera.relativeWidth = (int) (Game.width / Camera.scale);
         Camera.relativeHeight = (int) (Game.height / Camera.scale);
+         Game.freeSpace = new BoundingBox(
+            (float) relativeWidth / 2,
+            (float) relativeHeight / 2,
+            Game.width - relativeWidth,
+            Game.height - relativeHeight
+        );
         this.tileCountRows =  (int) Math.ceil((double) relativeHeight / MapEntity.defaultTileSize);
         this.tileCountCols = (int) Math.ceil((double) relativeWidth / MapEntity.defaultTileSize);
         this.tileSize =  Math.max(Game.width / tileCountCols, Game.height / tileCountRows);

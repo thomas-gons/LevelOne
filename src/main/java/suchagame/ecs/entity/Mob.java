@@ -4,23 +4,20 @@ import javafx.geometry.Rectangle2D;
 import suchagame.ecs.component.*;
 import suchagame.ecs.component.AnimationComponent.ACTION;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Mob extends Entity {
-
     private static final Map<String, Rectangle2D> spawnAreas = new HashMap<>();
     public Mob() {
         super();
         initSpawnAreas();
-        this.addComponent(new TransformComponent(spawnAreas.get("northeast")));
+        this.addComponent(new TransformComponent(spawnAreas.get((Math.random() > 0.5f) ? "northeast" : "southeast")));
 
         this.addComponent(new GraphicComponent("slime.png"));
 
         this.addComponent(new AnimationComponent(
-                this.getComponent(GraphicComponent.class),16,
+                this.getComponent(GraphicComponent.class),14,
                 ACTION.ATTACK, -1,
                 new int[]{4, 18, 11}
         ));

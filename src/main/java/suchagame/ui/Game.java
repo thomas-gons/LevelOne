@@ -57,6 +57,7 @@ public class Game extends Application {
             if (event.getCode() == KeyCode.SPACE) {
                 lightEnabled = !lightEnabled;
                 Game.canvas.setEffect(null);
+                System.out.println(Player.player.getComponent(TransformComponent.class).getPosition() );
             }
         });
         new InputSystem(scene);
