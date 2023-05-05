@@ -49,6 +49,6 @@ public class Light {
                         gradient
                 )
         );
-        Game.root.setEffect(blend);
+        Game.canvas.setEffect(blend);
     }
 }

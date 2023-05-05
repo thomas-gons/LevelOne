@@ -20,8 +20,8 @@ public class Mob extends Entity {
         this.addComponent(new GraphicComponent("slime.png"));
 
         this.addComponent(new AnimationComponent(
-                this.getComponent(GraphicComponent.class),10,
-                ACTION.DEAD, -1,
+                this.getComponent(GraphicComponent.class),16,
+                ACTION.ATTACK, -1,
                 new int[]{4, 18, 11}
         ));
 
