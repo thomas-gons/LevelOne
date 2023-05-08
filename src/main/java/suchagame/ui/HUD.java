@@ -15,6 +15,7 @@ import java.net.URL;
 public class HUD {
     private final AnchorPane root;
     private final Image heart = new Image(Utils.getPathResource(Game.class, "images/heart.png"));
+    private final Image emptySlot = new Image(Utils.getPathResource(Game.class, "images/empty_slot.png"));
     private final Image slimeDrop = new Image(Utils.getPathResource(Game.class, "images/slime_drop.png"));
     private final Font customFont;
     private Label slimeDropAmount;
@@ -23,10 +24,11 @@ public class HUD {
         URL fontUrl = getClass().getResource("fonts/disposabledroid-bb.regular.ttf");
         customFont = Font.loadFont(fontUrl.openStream(), 32);
         initHealthBar();
+        initEmptySlot();
         initSlimeDrop();
     }
 
-    public void initHealthBar() {
+    private void initHealthBar() {
         for (int i = 0; i < 5; i++) {
             ImageView heartView = new ImageView(heart);
             heartView.setPreserveRatio(true);
@@ -39,7 +41,30 @@ public class HUD {
         }
     }
 
-    public void initSlimeDrop() {
+    private void initEmptySlot() {
+        ImageView[] emptySlotViews = new ImageView[3];
+        int offset = 64;
+        for (int i = 0; i < 3; i++) {
+            emptySlotViews[i] = new ImageView(emptySlot);
+            emptySlotViews[i].setPreserveRatio(true);
+            emptySlotViews[i].setSmooth(false);
+            emptySlotViews[i].setFitWidth(128);
+        }
+
+        emptySlotViews[0].setLayoutX(offset);
+        emptySlotViews[0].setLayoutY(Game.height - emptySlot.getHeight() - 1.5 * offset);
+
+        emptySlotViews[1].setLayoutX(emptySlot.getWidth() + offset);
+        emptySlotViews[1].setLayoutY(Game.height - 2 * emptySlot.getHeight() - 2.5 * offset);
+
+        emptySlotViews[2].setLayoutX(2 * emptySlot.getWidth() + offset);
+        emptySlotViews[2].setLayoutY(Game.height - emptySlot.getHeight() - 1.5 * offset);
+
+
+        this.root.getChildren().addAll(emptySlotViews);
+    }
+
+    private void initSlimeDrop() {
         ImageView slimeDropView = new ImageView(slimeDrop);
         slimeDropView.setPreserveRatio(true);
         slimeDropView.setSmooth(false);

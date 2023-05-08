@@ -31,4 +31,9 @@ public class EntityManager {
     public void addEntity(Entity entity) {
         this.entities.add(entity);
     }
+
+    public void removeEntity(Entity entity) {
+        this.entities.remove(entity);
+    }
+
 }

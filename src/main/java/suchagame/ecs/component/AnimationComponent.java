@@ -27,8 +27,7 @@ public class AnimationComponent extends Component {
         graphicComponent.setHeight(graphicComponent.getHeight() / framesCountPerRow.length);
         graphicComponent.setOrigin(new Vector2<>(
                 graphicComponent.getWidth() * initFrame,
-                graphicComponent.getHeight() * initAction.ordinal()
-                )
+                graphicComponent.getHeight() * getActionRow(initAction))
         );
     }
 
@@ -49,10 +48,6 @@ public class AnimationComponent extends Component {
         this.currentFrame = (currentFrame + 1) % framesCountPerRow[currentAction.ordinal()];
     }
 
-    public int getFrameCount(ACTION action) {
-        return framesCountPerRow[action.ordinal()];
-    }
-
     public long getLastUpdate() {
         return lastUpdate;
     }
@@ -61,11 +56,8 @@ public class AnimationComponent extends Component {
         this.lastUpdate = lastUpdate;
     }
 
-    public ACTION getCurrentAction() {
-        return currentAction;
+    public int getActionRow(ACTION action) {
+        return action.ordinal();
     }
 
-    public void setCurrentAction(ACTION action) {
-        this.currentAction = action;
-    }
 }

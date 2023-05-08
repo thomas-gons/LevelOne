@@ -12,13 +12,17 @@ public class Player extends Entity {
     public Player() {
         super();
         this.addComponent(new TransformComponent(700, 550));
-        this.addComponent(new InputComponent(new KeyCode[]{KeyCode.Z, KeyCode.Q, KeyCode.S, KeyCode.D}));
+        this.addComponent(new InputComponent(
+                new KeyCode[]{
+                        KeyCode.Z, KeyCode.Q, KeyCode.S, KeyCode.D,
+                        KeyCode.E
+                }));
 
         this.addComponent(new GraphicComponent("flame.png"));
         this.addComponent(new AnimationComponent(
                 this.getComponent(GraphicComponent.class),
-                12, ACTION.IDLE, 0,
-                new int[]{8}
+                12, ACTION.ATTACK, 0,
+                new int[]{8, 8}
         ));
 
         this.addComponent(new PhysicComponent(
@@ -32,7 +36,7 @@ public class Player extends Entity {
                 "mp_max", 100f,
                 "atk", 10f,
                 "def", 10f,
-                "spd", 3f
+                "spd", 1.5f
         ))));
     }
 }
