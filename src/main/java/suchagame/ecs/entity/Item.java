@@ -6,16 +6,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Item extends Entity {
-    private static int nextId = 0;
-    private final int id;
+    private final String tag;
+    private final int slimeDropValue;
     @SafeVarargs
-    public Item(Map.Entry<String, Float>... stats) {
+    public Item(String tag, int slimeDropValue, Map.Entry<String, Float>... stats) {
         super();
-        this.id = nextId++;
-        addComponent(new StatsComponent(new HashMap<>(Map.ofEntries(stats))));
+        this.tag = tag;
+        this.slimeDropValue = slimeDropValue;
+        addComponent(new StatsComponent(
+                new HashMap<>(
+                        Map.ofEntries(stats)
+                ),
+                null
+        ));
     }
 
-    public int getId() {
-        return id;
+    public String getTag() {
+        return this.tag;
+    }
+
+    public int getSlimeDropValue() {
+        return this.slimeDropValue;
     }
 }

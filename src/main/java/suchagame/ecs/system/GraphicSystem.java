@@ -2,7 +2,7 @@ package suchagame.ecs.system;
 
 import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
-import suchagame.ecs.EntityManager;
+import javafx.scene.paint.Color;
 import suchagame.ecs.component.GraphicComponent;
 import suchagame.ecs.component.InputComponent;
 import suchagame.ecs.component.PhysicComponent;
@@ -10,24 +10,25 @@ import suchagame.ecs.component.TransformComponent;
 import suchagame.ecs.entity.Entity;
 import suchagame.ui.Camera;
 import suchagame.ui.Game;
-import suchagame.utils.Vector2;
+import suchagame.utils.Vector2f;
+
 
 import static java.lang.Float.NaN;
 
 
 public class GraphicSystem extends System {
     public static void render(GraphicsContext gc) {
-        AnimationSystem.update();
-        for (Entity entity : EntityManager.instance.getAllWithComponent(GraphicComponent.class)) {
+        for (Entity entity : Game.em.getAllWithComponent(GraphicComponent.class)) {
             GraphicComponent graphicComponent = entity.getComponent(GraphicComponent.class);
             updateVirtualPosition(entity, graphicComponent);
-            Vector2<Float> virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
+            Vector2f virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
             if (virtualPosition.getX() == NaN || virtualPosition.getY() == NaN)
                 continue;
+
             gc.drawImage(
                     graphicComponent.getSprite(),
-                    graphicComponent.getOrigin().getX(),
-                    graphicComponent.getOrigin().getY(),
+                    graphicComponent.getOrigin()[0],
+                    graphicComponent.getOrigin()[1],
                     graphicComponent.getWidth(),
                     graphicComponent.getHeight(),
                     virtualPosition.getX(),
@@ -35,13 +36,14 @@ public class GraphicSystem extends System {
                     graphicComponent.getWidth() * Camera.scale,
                     graphicComponent.getHeight() * Camera.scale
             );
+            renderBoundingBox();
         }
     }
 
     public static void updateVirtualPosition(Entity entity, GraphicComponent graphicComponent) {
 
-         Vector2<Float> position = entity.getComponent(TransformComponent.class).getPosition();
-         Vector2<Float> virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
+         Vector2f position = entity.getComponent(TransformComponent.class).getPosition();
+         Vector2f virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
          BoundingBox viewport = Camera.viewport;
 
          if (entity.hasComponent(InputComponent.class)) {
@@ -76,14 +78,22 @@ public class GraphicSystem extends System {
          }
     }
 
-    public static void render_bounding_boxes(GraphicsContext gc) {
-        for (Entity entity : EntityManager.instance.getAllWithComponent(GraphicComponent.class)) {
-            Vector2<Float> virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
-            BoundingBox boundingBox = entity.getComponent(PhysicComponent.class).getBoundingBox();
+    public static void renderBoundingBox() {
+        for (Entity entity : Game.em.getAllWithComponent(GraphicComponent.class)) {
+            GraphicComponent graphicComponent = entity.getComponent(GraphicComponent.class);
+            updateVirtualPosition(entity, graphicComponent);
+            Vector2f virtualPosition = entity.getComponent(TransformComponent.class).getVirtualPosition();
             if (virtualPosition.getX() == NaN || virtualPosition.getY() == NaN)
                 continue;
-            gc.setStroke(javafx.scene.paint.Color.RED);
-            gc.setLineWidth(2);
+
+            BoundingBox boundingBox = entity.getComponent(PhysicComponent.class).getBoundingBox();
+            Game.gc.setStroke(Color.LAWNGREEN);
+            Game.gc.strokeRect(
+                    virtualPosition.getX() + (boundingBox.getMinX() + graphicComponent.getWidth() / 2F) * Camera.scale,
+                    virtualPosition.getY() + (boundingBox.getMinY() + graphicComponent.getHeight() / 2F) * Camera.scale,
+                    boundingBox.getWidth() * Camera.scale,
+                    boundingBox.getHeight() * Camera.scale
+            );
         }
     }
 }

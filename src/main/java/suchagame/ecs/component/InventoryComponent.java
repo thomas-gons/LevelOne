@@ -1,18 +1,24 @@
 package suchagame.ecs.component;
 
 import suchagame.ecs.entity.Item;
+import suchagame.ui.Game;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class InventoryComponent extends Component {
-    Map<Integer, Item> items = new HashMap<>();
+    private Map<Item, Integer> inventory;
 
-    public void addItem(Item item) {
-        items.put(item.getId(), item);
+    public InventoryComponent(Map<Item, Integer> inventory) {
+        super();
+        this.inventory = inventory;
     }
 
-    public void removeItem(Item item) {
-        items.remove(item.getId());
+    public Map<Item, Integer> getInventory() {
+        return this.inventory;
+    }
+
+    public int getItemAmount(String tag) {
+        Item item = Game.em.getItem(tag);
+        return this.inventory.getOrDefault(item, 0);
     }
 }

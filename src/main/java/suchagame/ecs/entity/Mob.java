@@ -1,50 +1,64 @@
 package suchagame.ecs.entity;
 
-import javafx.geometry.Rectangle2D;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.geometry.BoundingBox;
 import suchagame.ecs.component.*;
 import suchagame.ecs.component.AnimationComponent.ACTION;
+import suchagame.ui.Game;
+import suchagame.utils.Vector2f;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Mob extends Entity {
-    private static final Map<String, Rectangle2D> spawnAreas = new HashMap<>();
+    private static final Map<String, BoundingBox> spawnAreas = initSpawnAreas();
+    private final Vector2f spawnOrigin;
     public Mob() {
         super();
-        initSpawnAreas();
-        this.addComponent(new TransformComponent(spawnAreas.get((Math.random() > 0.5f) ? "northeast" : "southeast")));
+        BoundingBox spawnArea = spawnAreas.get((Math.random() > 0.5f) ? "northeast" : "southeast");
+        this.spawnOrigin = new Vector2f((float) spawnArea.getCenterX(), (float) spawnArea.getCenterY());
+        this.addComponent(new TransformComponent(spawnArea));
 
         this.addComponent(new GraphicComponent("slime.png"));
 
         this.addComponent(new AnimationComponent(
                 this.getComponent(GraphicComponent.class),14,
-                ACTION.ATTACK, -1,
+                ACTION.IDLE, -1,
                 new int[]{4, 18, 11}
         ));
 
         this.addComponent(new PhysicComponent(
-                18, 12, -9, 10,
-                20, 0.5f, 0.5f, 0.5f, 0.5f));
+                22, 13, -10, 7,
+                1));
 
         this.addComponent(new StatsComponent(new HashMap<>(Map.of(
-                "hp", 100f,
                 "hp_max", 100f,
-                "mp", 100f,
                 "mp_max", 100f,
-                "atk", 10f,
+                "atk", 5f,
                 "def", 10f,
-                "spd", 5f
-        ))));
+                "spd", 1f
+            )), new HashMap<>(Map.of(
+                "hp", new SimpleFloatProperty(100),
+                "mp", new SimpleFloatProperty(100)
+            ))
+        ));
+
+        this.addComponent(new InventoryComponent(new HashMap<>(Map.of(
+                Game.em.getItem("slimeDrop"), (int) (Math.random() * 25)
+            ))
+        ));
     }
 
-    private void initSpawnAreas() {
-        spawnAreas.put(
+    private static Map<String, BoundingBox> initSpawnAreas() {
+        return new HashMap<>(Map.of(
                 "northeast",
-                new Rectangle2D(1150, 25,400, 250)
-        );
-        spawnAreas.put(
+                new BoundingBox(1150, 25,400, 250),
                 "southeast",
-                new Rectangle2D(1500, 750,400, 250)
-        );
+                new BoundingBox(1500, 750,400, 250)
+        ));
+    }
+
+    public Vector2f getSpawnOrigin() {
+        return spawnOrigin;
     }
 }

@@ -7,14 +7,25 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Pair;
+import suchagame.ecs.component.InventoryComponent;
+import suchagame.ecs.component.StatsComponent;
 import suchagame.utils.Utils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.stream.IntStream;
 
 public class HUD {
     private final AnchorPane root;
-    private final Image heart = new Image(Utils.getPathResource(Game.class, "images/heart.png"));
+
+    private final Pair<String, Image>[] statsIcons = new Pair[]{
+            new Pair<>("hp", new Image(Utils.getPathResource(Game.class, "images/heart.png"))),
+//            new Pair<>("mp", new Image(Utils.getPathResource(Game.class, "images/mana.png")))
+    };
+
+    private final int statsIconsCount = 5;
+
     private final Image emptySlot = new Image(Utils.getPathResource(Game.class, "images/empty_slot.png"));
     private final Image slimeDrop = new Image(Utils.getPathResource(Game.class, "images/slime_drop.png"));
     private final Font customFont;
@@ -23,21 +34,29 @@ public class HUD {
         this.root = root;
         URL fontUrl = getClass().getResource("fonts/disposabledroid-bb.regular.ttf");
         customFont = Font.loadFont(fontUrl.openStream(), 32);
-        initHealthBar();
+        initAllStatBars();
         initEmptySlot();
         initSlimeDrop();
     }
 
-    private void initHealthBar() {
-        for (int i = 0; i < 5; i++) {
-            ImageView heartView = new ImageView(heart);
-            heartView.setPreserveRatio(true);
-            heartView.setSmooth(false);
-            heartView.setFitWidth(48);
-            heartView.setViewport(new Rectangle2D(0, 0, heart.getWidth() / 3, heart.getHeight()));
-            heartView.setLayoutX(10 + 48 * i);
-            heartView.setLayoutY(10);
-            this.root.getChildren().add(heartView);
+    private void initAllStatBars() {
+        for (int i = 0; i < statsIcons.length; i++) {
+            Image statIcon = statsIcons[i].getValue();
+            for (int j = 0; j < statsIconsCount; j++) {
+                ImageView statBarView = new ImageView(statIcon);
+                statBarView.setPreserveRatio(true);
+                statBarView.setSmooth(false);
+                statBarView.setViewport(new Rectangle2D(
+                        0, 0,
+                        statIcon.getWidth() / 3, statIcon.getHeight()
+                ));
+
+                statBarView.setFitWidth(48);
+                statBarView.setLayoutX(10 + 48 * j);
+                statBarView.setLayoutY(10 + 48 * i);
+
+                this.root.getChildren().add(statBarView);
+            }
         }
     }
 
@@ -82,7 +101,53 @@ public class HUD {
         this.root.getChildren().add(slimeDropAmount);
     }
 
-    public void updateSlimeDropAmount(int amount) {
-        slimeDropAmount.setText(String.valueOf(amount));
+    public void updateSlimeDropAmount() {
+        slimeDropAmount.setText(String.valueOf(Game.em.getPlayer().getComponent(InventoryComponent.class).getItemAmount("slimeDrop")));
+    }
+
+    public void updateStatBar(String statTag, float newStatValue) {
+        float maxStatValue = Game.em.getPlayer().getComponent(StatsComponent.class).getStat(String.format("%s_max", statTag));
+        int fullSymbolCount = (int) Math.ceil((newStatValue / maxStatValue * statsIconsCount));
+        int halfSymbolCount = (newStatValue / maxStatValue * statsIconsCount % 1.0f < 0.5 ? 1: 0);
+        int statIconIndex = IntStream.range(0, statsIcons.length)
+                                 .filter(i -> statsIcons[i].getKey().equals(statTag))
+                                 .findFirst()
+                                 .orElse(-1);
+
+        Image statIcon = statsIcons[statIconIndex].getValue();
+        for (int i = 0; i < statsIconsCount; i++) {
+            int finalI = i;
+            ImageView statIconView = this.root.getChildren().stream()
+                    .filter(node -> node instanceof ImageView)
+                    .map(node -> (ImageView) node)
+                    .filter(node -> node.getImage().equals(statIcon))
+                    .filter(node -> node.getLayoutX() == 10 + 48 * finalI)
+                    .filter(node -> node.getLayoutY() == 10 + 48 * statIconIndex)
+                    .findFirst()
+                    .orElseThrow();
+
+            if (i < fullSymbolCount) {
+                statIconView.setViewport(new Rectangle2D(
+                        0, 0,
+                        statIcon.getWidth() / 3, statIcon.getHeight()
+                ));
+
+            } else if (i < fullSymbolCount + halfSymbolCount) {
+                statIconView.setViewport(new Rectangle2D(
+                        statIcon.getWidth() / 3, 0,
+                        statIcon.getWidth() / 3, statIcon.getHeight()
+                ));
+
+            } else {
+                statIconView.setViewport(new Rectangle2D(
+                        statIcon.getWidth() / 3 * 2, 0,
+                        statIcon.getWidth() / 3, statIcon.getHeight()
+                ));
+            }
+        }
+    }
+
+    public Font getCustomFont() {
+        return customFont;
     }
 }

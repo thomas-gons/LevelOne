@@ -6,7 +6,6 @@ import suchagame.ui.Game;
 import java.util.List;
 
 public class MapEntity extends Entity {
-    public static MapEntity map;
     public static final int layersCount = 2;
     public static final int defaultTileSize = 32;
     public static final int globalTileCountRows = (int) Math.ceil((double) Game.height / defaultTileSize);

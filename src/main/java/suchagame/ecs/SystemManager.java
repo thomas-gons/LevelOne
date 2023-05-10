@@ -1,5 +1,9 @@
 package suchagame.ecs;
 
+import suchagame.ecs.system.*;
+import suchagame.ui.Game;
+
+import java.lang.System;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +11,14 @@ public class SystemManager {
     List<System> systems = new ArrayList<>();
 
     public SystemManager() {
+        new InputSystem(Game.scene);
+        new StatsSystem();
+    }
+
+    public void update() {
+       MovementSystem.update();
+       AnimationSystem.update();
+       GraphicSystem.render(Game.gc);
     }
 
     public void add(System system) {

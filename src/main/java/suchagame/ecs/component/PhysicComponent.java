@@ -1,34 +1,26 @@
 package suchagame.ecs.component;
 
 import javafx.geometry.BoundingBox;
-import suchagame.utils.Vector2;
+import suchagame.utils.Vector2f;
 
 public class PhysicComponent extends Component {
 
     private BoundingBox boundingBox;
     private final float mass;
-    private final float rigidness;
-    private final float friction;
-    private final float elasticity;
-    private final float coefficientOfRestitution;
+
+    private Vector2f velocity = new Vector2f(0f);
 
     public PhysicComponent(
             int width, int height,
             int offsetX, int offsetY,
-            float mass, float rigidness,
-            float friction, float elasticity,
-            float coefficientOfRestitution) {
+            float mass) {
 
         boundingBox = new BoundingBox(offsetX, offsetY, width, height);
         this.mass = mass;
-        this.rigidness = rigidness;
-        this.friction = friction;
-        this.elasticity = elasticity;
-        this.coefficientOfRestitution = coefficientOfRestitution;
     }
 
 
-    public BoundingBox getTranslatedBoundingBox(Vector2<Float> position) {
+    public BoundingBox getTranslatedBoundingBox(Vector2f position) {
         return new BoundingBox(
                 boundingBox.getMinX() + position.getX(),
                 boundingBox.getMinY() + position.getY(),
@@ -41,23 +33,19 @@ public class PhysicComponent extends Component {
         return boundingBox;
     }
 
+    public void setBoundingBox(BoundingBox newBoundingBox) {
+        this.boundingBox = newBoundingBox;
+    }
     public float getMass() {
         return mass;
     }
 
-    public float getRigidness() {
-        return rigidness;
+    public Vector2f getVelocity() {
+        return this.velocity;
     }
 
-    public float getFriction() {
-        return friction;
+    public void setVelocity(Vector2f velocity) {
+        this.velocity = velocity;
     }
 
-    public float getElasticity() {
-        return elasticity;
-    }
-
-    public float getCoefficientOfRestitution() {
-        return coefficientOfRestitution;
-    }
 }

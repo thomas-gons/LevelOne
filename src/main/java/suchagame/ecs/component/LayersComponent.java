@@ -2,11 +2,9 @@ package suchagame.ecs.component;
 
 import suchagame.Main;
 import suchagame.ecs.entity.MapEntity;
-import suchagame.utils.Utils;
-import suchagame.utils.Vector2;
+import suchagame.utils.Vector2f;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -79,8 +77,9 @@ public class LayersComponent extends Component {
         }
     }
 
-    public int getTile(int layerID, Vector2<Float> position) {
-        return layers.get(layerID)[position.getY().intValue() / MapEntity.defaultTileSize][position.getX().intValue() / MapEntity.defaultTileSize];
+    public int getTile(int layerID, Vector2f position) {
+        return layers.get(layerID)[((int) position.getY()) / MapEntity.defaultTileSize]
+                                  [((int) position.getX()) / MapEntity.defaultTileSize];
     }
 
     public int[][] getLayer(int layerID) {

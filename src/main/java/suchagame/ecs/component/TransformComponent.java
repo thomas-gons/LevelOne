@@ -1,24 +1,26 @@
 package suchagame.ecs.component;
 
 
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Rectangle2D;
 import suchagame.ecs.entity.MapEntity;
-import suchagame.utils.Vector2;
+import suchagame.ui.Game;
+import suchagame.utils.Vector2f;
 
 
 public class TransformComponent extends Component {
-    private Vector2<Float> position;
-    private Vector2<Float> virtualPosition = new Vector2<>(0f, 0f);
+    private Vector2f position;
+    private Vector2f virtualPosition = new Vector2f(0f, 0f);
 
     public TransformComponent(float x, float y) {
-        this.position = new Vector2<>(x, y);
+        this.position = new Vector2f(x, y);
     }
 
-    public TransformComponent(Rectangle2D area) {
-        LayersComponent layersComponent = MapEntity.map.getComponent(LayersComponent.class);
+    public TransformComponent(BoundingBox area) {
+        LayersComponent layersComponent = Game.em.getMap().getComponent(LayersComponent.class);
 
         // rejection sampling
-        Vector2<Float> testPosition = new Vector2<>(0f, 0f);
+        Vector2f testPosition = new Vector2f(0f, 0f);
         do {
             testPosition.setX((float) (Math.random() * area.getWidth() + area.getMinX()));
             testPosition.setY((float) (Math.random() * area.getHeight() + area.getMinY()));
@@ -27,19 +29,20 @@ public class TransformComponent extends Component {
         this.position = testPosition;
     }
 
-    public Vector2<Float> getPosition() {
-        return new Vector2<>(this.position.getX(), this.position.getY());
+    public Vector2f getPosition() {
+        return this.position;
     }
 
-    public void setPosition(Vector2<Float> position) {
+    public Vector2f getPositionDeepCopy() {
+        return new Vector2f(this.position.getX(), this.position.getY());
+    }
+
+    public void setPosition(Vector2f position) {
         this.position = position;
     }
 
-    public Vector2<Float> getVirtualPosition() {
+    public Vector2f getVirtualPosition() {
         return this.virtualPosition;
     }
 
-    public void setVirtualPosition(Vector2<Float> virtualPosition) {
-        this.virtualPosition = virtualPosition;
-    }
 }
