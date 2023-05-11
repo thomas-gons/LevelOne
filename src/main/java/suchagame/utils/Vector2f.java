@@ -81,4 +81,9 @@ public class Vector2f {
         return this.x * other.x + this.y * other.y;
     }
 
+    public float distance(Vector2f other) {
+        return (float) Math.sqrt((this.x - other.x) * (this.x - other.x) +
+                                 (this.y - other.y) * (this.y - other.y));
+    }
+
 }

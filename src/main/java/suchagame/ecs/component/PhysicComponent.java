@@ -19,6 +19,11 @@ public class PhysicComponent extends Component {
         this.mass = mass;
     }
 
+    public PhysicComponent(BoundingBox boundingBox, float mass) {
+        this.boundingBox = boundingBox;
+        this.mass = mass;
+    }
+
 
     public BoundingBox getTranslatedBoundingBox(Vector2f position) {
         return new BoundingBox(
@@ -33,15 +38,42 @@ public class PhysicComponent extends Component {
         return boundingBox;
     }
 
-    public void setBoundingBox(BoundingBox newBoundingBox) {
-        this.boundingBox = newBoundingBox;
+    public static Vector2f getIntersectionDepth(BoundingBox a, BoundingBox b) {
+        float minOverlapX = (float) (a.getMaxX() - b.getMinX());
+        float minOverlapY = (float) (a.getMaxY() - b.getMinY());
+        float maxOverlapX = (float) (b.getMaxX() - a.getMinX());
+        float maxOverlapY = (float) (b.getMaxY() - a.getMinY());
+
+        float overlapX = 0;
+        float overlapY = 0;
+
+        if (minOverlapX > 0 && minOverlapY > 0) {
+            if (minOverlapX < minOverlapY) {
+                overlapX = minOverlapX;
+            } else {
+                overlapY = minOverlapY;
+            }
+        } else if (maxOverlapX > 0 && maxOverlapY > 0) {
+            if (maxOverlapX < maxOverlapY) {
+                overlapX = -maxOverlapX;
+            } else {
+                overlapY = -maxOverlapY;
+            }
+        }
+
+        return new Vector2f(overlapX, overlapY);
     }
+
     public float getMass() {
         return mass;
     }
 
     public Vector2f getVelocity() {
         return this.velocity;
+    }
+
+    public Vector2f getVelocityDeepCopy() {
+        return new Vector2f(this.velocity.getX(), this.velocity.getY());
     }
 
     public void setVelocity(Vector2f velocity) {

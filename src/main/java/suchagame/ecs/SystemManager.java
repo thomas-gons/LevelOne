@@ -1,32 +1,27 @@
 package suchagame.ecs;
 
 import suchagame.ecs.system.*;
+import suchagame.ecs.system.System;
 import suchagame.ui.Game;
 
-import java.lang.System;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SystemManager {
-    List<System> systems = new ArrayList<>();
+    public List<System> systems = new ArrayList<>();
 
     public SystemManager() {
-        new InputSystem(Game.scene);
-        new StatsSystem();
+        this.systems.addAll(List.of(
+                new InputSystem(Game.scene),
+                new StatsSystem(),
+                new GameplaySystem()
+        ));
     }
 
     public void update() {
        MovementSystem.update();
        AnimationSystem.update();
        GraphicSystem.render(Game.gc);
-    }
-
-    public void add(System system) {
-        systems.add(system);
-    }
-    public void addAll(System ... systems) {
-
-        this.systems.addAll(List.of(systems));
     }
 
     public <T extends System> T get(Class<T> systemClass) {

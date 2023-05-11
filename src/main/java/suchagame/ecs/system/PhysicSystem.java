@@ -4,14 +4,11 @@ import javafx.geometry.BoundingBox;
 import suchagame.ecs.component.*;
 import suchagame.ecs.entity.Entity;
 import suchagame.ecs.entity.MapEntity;
-import suchagame.ecs.entity.Mob;
-import suchagame.ecs.entity.Projectile;
 import suchagame.ui.Game;
 import suchagame.utils.Vector2f;
 
 public class PhysicSystem {
 
-    private static long lastTime = java.lang.System.currentTimeMillis();
     public static boolean checkCollision(Entity entity, Vector2f entityPosition) {
         if (!entity.hasComponent(suchagame.ecs.component.PhysicComponent.class))
             return true;
@@ -28,42 +25,82 @@ public class PhysicSystem {
             Vector2f otherEntityPosition = otherEntity.getComponent(TransformComponent.class).getPosition();
             BoundingBox otherBoundingBox = otherPhysicComponent.getTranslatedBoundingBox(otherEntityPosition);
             if (boundingBox.intersects(otherBoundingBox)) {
-                if (entity.getClass() != otherEntity.getClass() && (java.lang.System.currentTimeMillis() - lastTime > 100)) {
+                if (entity.getClass() != otherEntity.getClass()) {
                     StatsSystem.takeDamage(entity, otherEntity);
                     StatsSystem.takeDamage(otherEntity, entity);
-                    lastTime = java.lang.System.currentTimeMillis();
                 }
                 handleCollision(physicComponent, otherPhysicComponent, entityPosition, otherEntityPosition);
             }
         }
-        return !mapCheckCollision(boundingBox, entityPosition);
+        return mapCheckCollision(boundingBox, entityPosition);
     }
 
     private static void handleCollision(
-            PhysicComponent physicComponentA, PhysicComponent physicComponentB,
-            Vector2f positionA, Vector2f positionB) {
-
-
+        PhysicComponent physicComponentA, PhysicComponent physicComponentB,
+        Vector2f positionA, Vector2f positionB
+    ) {
         Vector2f velocityA = physicComponentA.getVelocity();
         Vector2f velocityB = physicComponentB.getVelocity();
         Vector2f collisionNormal = positionA.sub(positionB).normalize();
         Vector2f relativeVelocity = velocityA.sub(velocityB);
-        float impulse = -(1 + 0.7f) * relativeVelocity.dot(collisionNormal) /
-                collisionNormal.dot(collisionNormal) * (1 / physicComponentA.getMass() + 1 / physicComponentB.getMass());
-        applyForce(positionA, collisionNormal.mul(impulse), velocityA, physicComponentA.getMass());
-        applyForce(positionB, collisionNormal.mul(-impulse), velocityB, physicComponentB.getMass());
+
+        // Calculate impulse
+        float coeffOfRestitution = 0.7f;
+        float impulse = -(1 + coeffOfRestitution) * relativeVelocity.dot(collisionNormal) /
+            ((1 / physicComponentA.getMass()) + (1 / physicComponentB.getMass()));
+
+        // Apply impulse
+        applyForce(positionA, collisionNormal.mul(impulse), velocityA, physicComponentA.getBoundingBox(), physicComponentA.getMass());
+        applyForce(positionB, collisionNormal.mul(-impulse), velocityB, physicComponentB.getBoundingBox(), physicComponentB.getMass());
+
+        // Resolve interpenetration
+         float totalMass = physicComponentA.getMass() + physicComponentB.getMass();
+//        Vector2f interpenetration = collisionNormal.mul(getIntersectionDepth(
+//                    physicComponentA.getTranslatedBoundingBox(positionA),
+//                    physicComponentB.getTranslatedBoundingBox(positionB),
+//                    collisionNormal).div(totalMass));
+//
+//        positionA.translate(interpenetration);
+//        positionB.translate(interpenetration.mul(-1));
     }
 
-    private static void applyForce(Vector2f position, Vector2f force, Vector2f velocity, float mass) {
+     private static void applyForce(Vector2f position, Vector2f force, Vector2f velocity, BoundingBox bb, float mass) {
         Vector2f acceleration = force.div(mass);
         acceleration.translate(velocity);
-        position.translate(acceleration.div(4));
+        if (mapCheckCollision(bb, position.add(acceleration)))
+            position.translate(acceleration);
     }
+
+    private static Vector2f getIntersectionDepth(BoundingBox bbA, BoundingBox bbB, Vector2f normal) {
+        float minIntervalDistance = (float) Math.abs(bbB.getMinX() - bbA.getMaxX());
+
+        float intervalDistance = (float) Math.abs(bbA.getMinX() - bbB.getMaxX());
+        if (intervalDistance < minIntervalDistance) {
+            minIntervalDistance = intervalDistance;
+            normal.set(-normal.getX(), normal.getY());
+        }
+
+        intervalDistance = (float) Math.abs(bbB.getMinY() - bbA.getMaxY());
+        if (intervalDistance < minIntervalDistance) {
+            minIntervalDistance = intervalDistance;
+            normal.set(normal.getX(), -normal.getY());
+        }
+
+        intervalDistance = (float) Math.abs(bbA.getMinY() - bbB.getMaxY());
+        if (intervalDistance < minIntervalDistance) {
+            normal.set(normal.getX(), -normal.getY());
+        }
+
+        float depthX = normal.getX() * minIntervalDistance;
+        float depthY = normal.getY() * minIntervalDistance;
+        return new Vector2f(depthX, depthY);
+    }
+
 
     private static boolean mapCheckCollision(BoundingBox entityBB, Vector2f entityPosition) {
         if (entityPosition.getX() < 0 || entityPosition.getY() < 0 ||
                 entityPosition.getX() > Game.width || entityPosition.getY() > Game.height) {
-            return true;
+            return false;
         }
         // check collision with map
         int[] upperLeftInTiles = new int[]{
@@ -79,13 +116,13 @@ public class PhysicSystem {
             for (int x = upperLeftInTiles[0]; x <= lowerRightInTiles[0]; x++) {
                 for (int y = upperLeftInTiles[1]; y <= lowerRightInTiles[1]; y++) {
                     if (collisionLayerCheck[y][x])
-                        return true;
+                        return false;
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 }

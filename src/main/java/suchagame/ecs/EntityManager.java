@@ -5,26 +5,34 @@ import suchagame.ecs.component.StatsComponent;
 import suchagame.ecs.entity.*;
 import suchagame.ecs.system.StatsSystem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class EntityManager {
     public List<Entity> entities = new ArrayList<>();
+    private int itemsCount;
 
     public EntityManager() {}
 
-    public void init(int mobCount) {
+    public void initEntities(int mobCount) {
         addItems();
         this.addEntity(new MapEntity());
         this.addEntity(new Player());
+        this.addEntity(new NPC());
         for (int i = 0; i < mobCount; i++) {
             this.addEntity(new Mob());
         }
     }
 
     private void addItems() {
-        this.addEntity(new Item("slimeDrop", 1));
+        this.addEntity(new Item("slime_drop", Item.ItemType.MISC, 1));
+        this.addEntity(new Item("fireball", Item.ItemType.SPELL, 250));
+        this.addEntity(new Item("heal_potion", Item.ItemType.CONSUMABLE, 10,
+                Map.entry("hp", 25f)
+        ));
+        this.addEntity(new Item("mana_potion", Item.ItemType.CONSUMABLE, 10,
+                Map.entry("mp", 25f)
+        ));
+        itemsCount = Entity.globalID;
     }
 
     public <T extends Component> List<Entity> getAllWithComponent(Class<T> componentClass) {
@@ -37,10 +45,14 @@ public class EntityManager {
     }
 
     public MapEntity getMap() {
-        return (MapEntity) this.entities.get(1);
+        return (MapEntity) this.entities.get(itemsCount);
     }
     public Player getPlayer() {
-        return (Player) this.entities.get(2);
+        return (Player) this.entities.get(itemsCount + 1);
+    }
+
+    public NPC getNPC() {
+        return (NPC) this.entities.get(itemsCount + 2);
     }
 
     public void addEntity(Entity entity) {

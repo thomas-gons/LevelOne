@@ -6,7 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Entity {
+    public static int globalID = 0;
     private Map<Class<? extends Component>, Component> components = new HashMap<>();
+
+    public Entity() {
+        globalID++;
+    }
 
     public <T extends Component> boolean hasComponent(Class<T> componentClass) {
         return this.getComponent(componentClass) != null;

@@ -31,6 +31,7 @@ public class Debug {
             this.debugLabels.get("entities").setText("Entity Count: " + Game.em.getEntityCount());
             this.debugLabels.get("position").setText("Player Position: " + Game.em.getPlayer().getComponent(TransformComponent.class).getPosition());
             this.debugLabels.get("health").setText("Player Health: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("hp"));
+            this.debugLabels.get("mana").setText("Player Mana: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("mp"));
         }));
 
         this.debugLoop.setCycleCount(Timeline.INDEFINITE);
@@ -39,7 +40,7 @@ public class Debug {
     }
 
     private void initDebugView() {
-        String[] debugLabels = {"fps", "entities", "scale", "position", "health"};
+        String[] debugLabels = {"fps", "entities", "scale", "position", "health", "mana"};
         for (int i = 0; i < debugLabels.length; i++) {
             Label label = initLabel();
             label.setLayoutX(10);

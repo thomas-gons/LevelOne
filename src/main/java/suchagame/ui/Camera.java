@@ -113,7 +113,7 @@ public class Camera {
     }
 
     public void alterScale(float delta) {
-        if (Camera.scale + delta < 1f || Camera.scale + delta > 7f)
+        if (Camera.scale + delta < 2f || Camera.scale + delta > 7f)
             return;
         Camera.scale += delta;
         Camera.relativeWidth = (int) (Game.width / Camera.scale);

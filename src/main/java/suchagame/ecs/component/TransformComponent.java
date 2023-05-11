@@ -12,6 +12,10 @@ public class TransformComponent extends Component {
     private Vector2f position;
     private Vector2f virtualPosition = new Vector2f(0f, 0f);
 
+    public TransformComponent(Vector2f position) {
+        this.position = position;
+    }
+
     public TransformComponent(float x, float y) {
         this.position = new Vector2f(x, y);
     }

@@ -15,10 +15,9 @@ public class Mob extends Entity {
     private final Vector2f spawnOrigin;
     public Mob() {
         super();
-        BoundingBox spawnArea = spawnAreas.get((Math.random() > 0.5f) ? "northeast" : "southeast");
+        BoundingBox spawnArea = spawnAreas.get("all"); // (Math.random() > 0.5f) ? "northeast" : "southeast");
         this.spawnOrigin = new Vector2f((float) spawnArea.getCenterX(), (float) spawnArea.getCenterY());
         this.addComponent(new TransformComponent(spawnArea));
-
         this.addComponent(new GraphicComponent("slime.png"));
 
         this.addComponent(new AnimationComponent(
@@ -34,17 +33,17 @@ public class Mob extends Entity {
         this.addComponent(new StatsComponent(new HashMap<>(Map.of(
                 "hp_max", 100f,
                 "mp_max", 100f,
-                "atk", 5f,
+                "atk", 9f,
                 "def", 10f,
-                "spd", 1f
+                "spd", 0f
             )), new HashMap<>(Map.of(
-                "hp", new SimpleFloatProperty(100),
+                "hp", new SimpleFloatProperty(1000000),
                 "mp", new SimpleFloatProperty(100)
             ))
         ));
 
         this.addComponent(new InventoryComponent(new HashMap<>(Map.of(
-                Game.em.getItem("slimeDrop"), (int) (Math.random() * 25)
+                Game.em.getItem("slime_drop"), (int) (Math.random() * 25)
             ))
         ));
     }
@@ -54,7 +53,9 @@ public class Mob extends Entity {
                 "northeast",
                 new BoundingBox(1150, 25,400, 250),
                 "southeast",
-                new BoundingBox(1500, 750,400, 250)
+                new BoundingBox(1500, 750,400, 250),
+                "all",
+                new BoundingBox(0, 0, 1920, 1080)
         ));
     }
 

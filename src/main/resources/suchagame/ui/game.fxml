@@ -7,5 +7,6 @@
 <StackPane>
     <Canvas id="game_canvas" width="1920" height="1080"> </Canvas>
     <AnchorPane id="game_hud" prefHeight="1920.0" prefWidth="1080"> </AnchorPane>
+    <AnchorPane id="game_npc_menu" prefHeight="1920.0" prefWidth="1080"> </AnchorPane>
     <AnchorPane id="game_debug" prefHeight="1920.0" prefWidth="1080"> </AnchorPane>
 </StackPane>
