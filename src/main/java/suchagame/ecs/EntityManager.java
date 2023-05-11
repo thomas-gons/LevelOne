@@ -11,6 +11,8 @@ import java.util.Objects;
 
 public class EntityManager {
     public List<Entity> entities = new ArrayList<>();
+    private int itemsCount;
+    private int mobsCount;
 
     public EntityManager() {}
 
@@ -21,10 +23,14 @@ public class EntityManager {
         for (int i = 0; i < mobCount; i++) {
             this.addEntity(new Mob());
         }
+        mobsCount = Entity.globalID - itemsCount - 2;
     }
 
     private void addItems() {
-        this.addEntity(new Item("slimeDrop", 1));
+        this.addEntity(new Item("slimeDrop", Item.ItemType.MISC, 1));
+        this.addEntity(new Item("fireball", Item.ItemType.SPELL, 0));
+
+        itemsCount = Entity.globalID;
     }
 
     public <T extends Component> List<Entity> getAllWithComponent(Class<T> componentClass) {
@@ -37,10 +43,10 @@ public class EntityManager {
     }
 
     public MapEntity getMap() {
-        return (MapEntity) this.entities.get(1);
+        return (MapEntity) this.entities.get(itemsCount);
     }
     public Player getPlayer() {
-        return (Player) this.entities.get(2);
+        return (Player) this.entities.get(itemsCount + 1);
     }
 
     public void addEntity(Entity entity) {

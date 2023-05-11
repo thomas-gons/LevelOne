@@ -47,7 +47,7 @@ public class Game extends Application {
         scene = new Scene(root, width, height);
 
         em = new EntityManager();
-        em.init(1);
+        em.init(16);
 
         sm = new SystemManager();
 

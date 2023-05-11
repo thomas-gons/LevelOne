@@ -18,7 +18,6 @@ public class Mob extends Entity {
         BoundingBox spawnArea = spawnAreas.get((Math.random() > 0.5f) ? "northeast" : "southeast");
         this.spawnOrigin = new Vector2f((float) spawnArea.getCenterX(), (float) spawnArea.getCenterY());
         this.addComponent(new TransformComponent(spawnArea));
-
         this.addComponent(new GraphicComponent("slime.png"));
 
         this.addComponent(new AnimationComponent(
@@ -34,7 +33,7 @@ public class Mob extends Entity {
         this.addComponent(new StatsComponent(new HashMap<>(Map.of(
                 "hp_max", 100f,
                 "mp_max", 100f,
-                "atk", 5f,
+                "atk", 9f,
                 "def", 10f,
                 "spd", 1f
             )), new HashMap<>(Map.of(

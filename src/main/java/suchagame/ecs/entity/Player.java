@@ -15,7 +15,7 @@ public class Player extends Entity {
         this.addComponent(new TransformComponent(700, 550));
         this.addComponent(new InputComponent(
                 new KeyCode[]{KeyCode.Z, KeyCode.Q, KeyCode.S, KeyCode.D},
-                new KeyCode[]{KeyCode.E}
+                new KeyCode[]{KeyCode.AMPERSAND, KeyCode.DEAD_ACUTE, KeyCode.QUOTEDBL, KeyCode.E}
         ));
 
         this.addComponent(new GraphicComponent("flame.png"));
@@ -47,5 +47,10 @@ public class Player extends Entity {
                 Game.em.getItem("slimeDrop"), 100
             ))
         ));
+
+        this.addComponent(new CharacterComponent(new HashMap<>(Map.of(
+                Item.ItemType.SPELL, Game.em.getItem("fireball")
+            )))
+        );
     }
 }

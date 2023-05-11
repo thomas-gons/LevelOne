@@ -7,11 +7,14 @@ import java.util.Map;
 
 public class Item extends Entity {
     private final String tag;
+    private final ItemType type;
     private final int slimeDropValue;
+
     @SafeVarargs
-    public Item(String tag, int slimeDropValue, Map.Entry<String, Float>... stats) {
+    public Item(String tag, ItemType type, int slimeDropValue, Map.Entry<String, Float>... stats) {
         super();
         this.tag = tag;
+        this.type = type;
         this.slimeDropValue = slimeDropValue;
         addComponent(new StatsComponent(
                 new HashMap<>(
@@ -25,7 +28,18 @@ public class Item extends Entity {
         return this.tag;
     }
 
+    public ItemType getType() {
+        return this.type;
+    }
+
     public int getSlimeDropValue() {
         return this.slimeDropValue;
+    }
+
+    public enum ItemType {
+        SPELL,
+        ARTEFACT,
+        CONSUMABLE,
+        MISC
     }
 }

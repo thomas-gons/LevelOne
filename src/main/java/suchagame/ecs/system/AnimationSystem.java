@@ -1,12 +1,10 @@
 package suchagame.ecs.system;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
 import suchagame.ecs.component.AnimationComponent;
 import suchagame.ecs.component.GraphicComponent;
 import suchagame.ecs.entity.Entity;
 import suchagame.ui.Game;
+import suchagame.utils.Timer;
 
 
 public class AnimationSystem extends System {
@@ -27,14 +25,7 @@ public class AnimationSystem extends System {
     public static void triggerAction(Entity entity, Runnable callback, AnimationComponent.ACTION action) {
         AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
         long duration = animationComponent.getDurationOfAction(action);
-        entity.getComponent(AnimationComponent.class).setCurrentAction(action);
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(duration), event -> {
-            if (callback != null) {
-                callback.run();
-            }
-        }));
-        timeline.setCycleCount(1);
-        timeline.play();
+        animationComponent.setCurrentAction(action);
+        new Timer(duration, callback);
     }
-
 }

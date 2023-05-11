@@ -58,14 +58,15 @@ public class MovementSystem extends System {
     public static void updateMob(Mob mob) {
         Vector2f mobPosition = mob.getComponent(TransformComponent.class).getPositionDeepCopy();
         Vector2f playerPosition = Game.em.getPlayer().getComponent(TransformComponent.class).getPosition();
-        GraphicComponent graphicComponent = Game.em.getPlayer().getComponent(GraphicComponent.class);
-        playerPosition = playerPosition.add(new Vector2f(graphicComponent.getWidth(), graphicComponent.getHeight()).div(2));
+        playerPosition = playerPosition.add(new Vector2f(8, 8));
+
         float speed = mob.getComponent(StatsComponent.class).getStat("spd");
         Vector2f direction = playerPosition.sub(mobPosition).normalize();
         PhysicComponent physicComponent = mob.getComponent(PhysicComponent.class);
         physicComponent.setVelocity(direction.mul(speed));
         Vector2f checkPosition = mobPosition.add(physicComponent.getVelocity());
         if (PhysicSystem.checkCollision(mob, checkPosition))
-            (mob.getComponent(TransformComponent.class)).setPosition(checkPosition);
-        }
+            ;
+//            (mob.getComponent(TransformComponent.class)).setPosition(checkPosition);
+    }
 }

@@ -66,6 +66,8 @@ public class AnimationComponent extends Component {
     public void setCurrentAction(ACTION currentAction) {
         this.currentAction = (this.actionCount < currentAction.ordinal()) ?
                 ACTION.values()[this.actionCount] : currentAction;
+
+        this.currentFrame = 0;
     }
 
     public ACTION getCurrentAction() {
@@ -73,6 +75,6 @@ public class AnimationComponent extends Component {
     }
 
     public long getDurationOfAction(ACTION action) {
-        return (long) (((float) 1000 / framerate) * (framesCountPerRow[Math.min(this.actionCount, currentAction.ordinal())] - 1));
+        return (long) ((1000f / framerate) * (framesCountPerRow[Math.min(this.actionCount, action.ordinal())] - 1));
     }
 }

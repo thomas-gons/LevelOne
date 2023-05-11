@@ -50,14 +50,14 @@ public class PhysicSystem {
         Vector2f relativeVelocity = velocityA.sub(velocityB);
         float impulse = -(1 + 0.7f) * relativeVelocity.dot(collisionNormal) /
                 collisionNormal.dot(collisionNormal) * (1 / physicComponentA.getMass() + 1 / physicComponentB.getMass());
-        applyForce(positionA, collisionNormal.mul(impulse), velocityA, physicComponentA.getMass());
-        applyForce(positionB, collisionNormal.mul(-impulse), velocityB, physicComponentB.getMass());
+//        applyForce(positionA, collisionNormal.mul(impulse), velocityA, physicComponentA.getMass());
+//        applyForce(positionB, collisionNormal.mul(-impulse), velocityB, physicComponentB.getMass());
     }
 
     private static void applyForce(Vector2f position, Vector2f force, Vector2f velocity, float mass) {
         Vector2f acceleration = force.div(mass);
         acceleration.translate(velocity);
-        position.translate(acceleration.div(4));
+        position.translate(acceleration);
     }
 
     private static boolean mapCheckCollision(BoundingBox entityBB, Vector2f entityPosition) {

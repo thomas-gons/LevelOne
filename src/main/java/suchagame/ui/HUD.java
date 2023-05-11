@@ -14,14 +14,18 @@ import suchagame.utils.Utils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 public class HUD {
     private final AnchorPane root;
 
+    private final Map<String, ImageView[]> statsIconsViews = new HashMap<>();
+
     private final Pair<String, Image>[] statsIcons = new Pair[]{
             new Pair<>("hp", new Image(Utils.getPathResource(Game.class, "images/heart.png"))),
-//            new Pair<>("mp", new Image(Utils.getPathResource(Game.class, "images/mana.png")))
+            new Pair<>("mp", new Image(Utils.getPathResource(Game.class, "images/mana.png")))
     };
 
     private final int statsIconsCount = 5;
@@ -42,6 +46,7 @@ public class HUD {
     private void initAllStatBars() {
         for (int i = 0; i < statsIcons.length; i++) {
             Image statIcon = statsIcons[i].getValue();
+            statsIconsViews.put(statsIcons[i].getKey(), new ImageView[statsIconsCount]);
             for (int j = 0; j < statsIconsCount; j++) {
                 ImageView statBarView = new ImageView(statIcon);
                 statBarView.setPreserveRatio(true);
@@ -55,6 +60,7 @@ public class HUD {
                 statBarView.setLayoutX(10 + 48 * j);
                 statBarView.setLayoutY(10 + 48 * i);
 
+                statsIconsViews.get(statsIcons[i].getKey())[j] = statBarView;
                 this.root.getChildren().add(statBarView);
             }
         }
@@ -107,8 +113,8 @@ public class HUD {
 
     public void updateStatBar(String statTag, float newStatValue) {
         float maxStatValue = Game.em.getPlayer().getComponent(StatsComponent.class).getStat(String.format("%s_max", statTag));
-        int fullSymbolCount = (int) Math.ceil((newStatValue / maxStatValue * statsIconsCount));
-        int halfSymbolCount = (newStatValue / maxStatValue * statsIconsCount % 1.0f < 0.5 ? 1: 0);
+        int fullSymbolCount = (int) Math.floor(statsIconsCount * newStatValue / maxStatValue);
+        int halfSymbolCount = (statsIconsCount * newStatValue / maxStatValue) % 1f > 0.5f ? 1: 0;
         int statIconIndex = IntStream.range(0, statsIcons.length)
                                  .filter(i -> statsIcons[i].getKey().equals(statTag))
                                  .findFirst()
@@ -116,15 +122,7 @@ public class HUD {
 
         Image statIcon = statsIcons[statIconIndex].getValue();
         for (int i = 0; i < statsIconsCount; i++) {
-            int finalI = i;
-            ImageView statIconView = this.root.getChildren().stream()
-                    .filter(node -> node instanceof ImageView)
-                    .map(node -> (ImageView) node)
-                    .filter(node -> node.getImage().equals(statIcon))
-                    .filter(node -> node.getLayoutX() == 10 + 48 * finalI)
-                    .filter(node -> node.getLayoutY() == 10 + 48 * statIconIndex)
-                    .findFirst()
-                    .orElseThrow();
+            ImageView statIconView = statsIconsViews.get(statTag)[i];
 
             if (i < fullSymbolCount) {
                 statIconView.setViewport(new Rectangle2D(
