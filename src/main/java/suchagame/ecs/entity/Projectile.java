@@ -63,7 +63,7 @@ public class Projectile extends Entity {
                 12, new int[]{5, 7},
                 new Vector2f(7, 37),
                 new BoundingBox(-8, -6, 17, 15), 20,
-                100f, 3f, 50000f);
+                100f, 3f, 50f);
 
         private final String tag;
         private final int manaCost;

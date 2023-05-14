@@ -10,19 +10,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import suchagame.ecs.EntityManager;
 import suchagame.ecs.SystemManager;
-import suchagame.ecs.component.TransformComponent;
-import suchagame.ecs.entity.MapEntity;
-import suchagame.ecs.entity.Mob;
-import suchagame.ecs.entity.Player;
-import suchagame.ecs.system.InputSystem;
-
-import java.net.URL;
-import java.util.Objects;
 
 
 public class Game extends Application {
@@ -44,15 +35,15 @@ public class Game extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(Game.class.getResource("game.fxml"));
         root = fxmlLoader.load();
-        scene = new Scene(root, width, height);
 
         canvas = (Canvas) root.lookup("#game_canvas");
         gc = canvas.getGraphicsContext2D();
         gc.setImageSmoothing(false);
 
+        scene = new Scene(root, width, height);
 
         em = new EntityManager();
-        em.initEntities(2);
+        em.initEntities();
         sm = new SystemManager();
 
         hud = new HUD((AnchorPane) root.lookup("#game_hud"));
@@ -62,7 +53,7 @@ public class Game extends Application {
             camera.alterScale((float) event.getDeltaY() / 1000 * 25f);
         });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.BACK_SPACE) {
+            if (event.getCode() == KeyCode.SPACE) {
                 lightEnabled = !lightEnabled;
                 Game.canvas.setEffect(null);
             }

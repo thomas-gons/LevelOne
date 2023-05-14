@@ -37,8 +37,8 @@ public class Mob extends Entity {
                 "def", 10f,
                 "spd", 0f
             )), new HashMap<>(Map.of(
-                "hp", new SimpleFloatProperty(1000000),
-                "mp", new SimpleFloatProperty(100)
+                "hp", new SimpleFloatProperty(100f),
+                "mp", new SimpleFloatProperty(100f)
             ))
         ));
 

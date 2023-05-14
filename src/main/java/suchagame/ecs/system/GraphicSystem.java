@@ -36,7 +36,7 @@ public class GraphicSystem extends System {
                     graphicComponent.getWidth() * Camera.scale,
                     graphicComponent.getHeight() * Camera.scale
             );
-            renderBoundingBox();
+//            renderBoundingBox();
         }
     }
 

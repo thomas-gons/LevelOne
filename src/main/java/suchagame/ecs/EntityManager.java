@@ -13,7 +13,8 @@ public class EntityManager {
 
     public EntityManager() {}
 
-    public void initEntities(int mobCount) {
+    public void initEntities() {
+        int mobCount = 16;
         addItems();
         this.addEntity(new MapEntity());
         this.addEntity(new Player());

@@ -3,13 +3,11 @@ package suchagame.ecs.system;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 
-import suchagame.ecs.component.*;
 import suchagame.ecs.entity.Item;
+import suchagame.ecs.component.*;
 import suchagame.ui.Game;
 
 public class InputSystem extends System {
-
-
    public InputSystem(Scene scene) {
        if (scene == null) {
            throw new IllegalArgumentException("Node cannot be null");
