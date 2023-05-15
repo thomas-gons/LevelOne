@@ -34,13 +34,13 @@ public class Player extends Entity {
 
         this.addComponent(new StatsComponent(
                 new HashMap<>(Map.of(
-                    "hp_max", 100f,
+                    "hp_max", 1000000f,
                     "mp_max", 100f,
                     "atk", 5f,
                     "def", 10f,
                     "spd", 2f
                 )), new HashMap<>(Map.of(
-                    "hp", new SimpleFloatProperty(100f),
+                    "hp", new SimpleFloatProperty(1000000f),
                     "mp", new SimpleFloatProperty(100f)
                 ))
         ));

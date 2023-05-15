@@ -29,7 +29,7 @@ public class PhysicSystem {
                     StatsSystem.takeDamage(entity, otherEntity);
                     StatsSystem.takeDamage(otherEntity, entity);
                 }
-                handleCollision(physicComponent, otherPhysicComponent, entityPosition, otherEntityPosition);
+//                handleCollision(physicComponent, otherPhysicComponent, entityPosition, otherEntityPosition);
             }
         }
         return mapCheckCollision(boundingBox, entityPosition);

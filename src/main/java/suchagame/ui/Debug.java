@@ -59,14 +59,17 @@ public class Debug {
     }
 
     private void toggleDebugView() {
+        debugView.toBack();
         Game.scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.F3) {
                 this.debugViewVisible = !this.debugViewVisible;
                 if (this.debugViewVisible) {
                     this.debugLoop.play();
+                    debugView.toFront();
                     this.debugView.visibleProperty().setValue(true);
                 } else {
                     this.debugLoop.pause();
+                    debugView.toBack();
                     this.debugView.visibleProperty().setValue(false);
                 }
             }

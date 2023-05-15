@@ -11,7 +11,7 @@ public class GameplaySystem extends System {
     private static Timer cooldownTimer;
     private static Timer regenCooldownTimer;
     public void fireProjectile() {
-       if (cooldownTimer != null) {
+       if (cooldownTimer != null && regenCooldownTimer != null) {
            regenCooldownTimer.stop();
            return;
        }
@@ -72,7 +72,6 @@ public class GameplaySystem extends System {
     public void interactWithNPC() {
         Vector2f playerPosition = Game.em.getPlayer().getComponent(TransformComponent.class).getPosition();
         Vector2f npcPosition = Game.em.getNPC().getComponent(TransformComponent.class).getPosition();
-        java.lang.System.out.println(playerPosition.distance(npcPosition));
         if (playerPosition.distance(npcPosition) < 75) {
             Game.npcMenu.toggleNPCMenuView();
         }

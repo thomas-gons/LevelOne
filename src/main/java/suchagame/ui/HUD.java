@@ -25,7 +25,10 @@ import java.util.stream.IntStream;
 public class HUD {
     private final AnchorPane root;
     private final Font customFont;
+    private Map<String, Image> itemIcons = new HashMap<>();
     private final Map<String, ImageView[]> statsIconsViews = new HashMap<>();
+
+    // get all images of items define in entity manager
 
     private final Pair<String, Image>[] statsIcons = new Pair[]{
             new Pair<>("hp", new Image(Utils.getPathResource(Game.class, "images/heart.png"))),
@@ -37,7 +40,6 @@ public class HUD {
     private Map<Item.ItemType, ImageView> handItemsViews = new HashMap<>();
 
     private Label consumableItemAmount;
-    private final Image slimeDrop = new Image(Utils.getPathResource(Game.class, "images/items/slime_drop.png"));
     private Label slimeDropAmount;
 
     public HUD(AnchorPane root) throws IOException {
@@ -45,6 +47,7 @@ public class HUD {
         URL fontUrl = getClass().getResource("fonts/disposabledroid-bb.regular.ttf");
         customFont = Font.loadFont(fontUrl.openStream(), 32);
         initAllStatBars();
+        initItemsIcons();
         initHandSlot();
         initSlimeDrop();
     }
@@ -96,7 +99,7 @@ public class HUD {
         for (Map.Entry<Item.ItemType, Item> entry : handItems.entrySet()) {
             Item item = entry.getValue();
             if (item == null) continue;
-            Image itemImage = new Image(Utils.getPathResource(Game.class, "images/items/" + item.getTag() + ".png"));
+            Image itemImage = itemIcons.get(item.getTag());
             ImageView itemImageView = new ImageView(itemImage);
             itemImageView.setPreserveRatio(true);
             itemImageView.setSmooth(false);
@@ -117,7 +120,7 @@ public class HUD {
         consumableItemAmount.setTextFill(Color.LIGHTGRAY);
         consumableItemAmount.setFont(customFont);
         consumableItemAmount.setText(String.valueOf(Game.sm.get(GameplaySystem.class).getAmountOfCurrentConsumable()));
-        consumableItemAmount.setLayoutX(emptySlotViews[1].getLayoutX() + 128 - 20);
+        consumableItemAmount.setLayoutX(emptySlotViews[1].getLayoutX() + 128 - 22);
         consumableItemAmount.setLayoutY(emptySlotViews[1].getLayoutY() + 128 - 32);
 
         this.root.getChildren().addAll(emptySlotViews);
@@ -126,6 +129,7 @@ public class HUD {
     }
 
     private void initSlimeDrop() {
+        Image slimeDrop = getItemIcon("slime_drop");
         ImageView slimeDropView = new ImageView(slimeDrop);
         slimeDropView.setPreserveRatio(true);
         slimeDropView.setSmooth(false);
@@ -141,6 +145,22 @@ public class HUD {
         slimeDropAmount.setLayoutX(Game.width - slimeDrop.getWidth() * 3 + 32);
         slimeDropAmount.setLayoutY(Game.height - slimeDrop.getHeight() - 14);
         this.root.getChildren().add(slimeDropAmount);
+    }
+
+    private void initItemsIcons() {
+        for (Item item: Game.em.getAllItems()) {
+            this.itemIcons.put(
+                    item.getTag(),
+                    new Image(Utils.getPathResource(Game.class, "images/items/" + item.getTag() + ".png")));
+        }
+    }
+
+    public Font resizeFont(int size) {
+        return Font.font(customFont.getFamily(), size);
+    }
+
+    public Image getItemIcon(String tag) {
+        return itemIcons.get(tag);
     }
 
     public Font getCustomFont() {
@@ -186,7 +206,7 @@ public class HUD {
     }
 
     public void updateHandSlot(Item item) {
-        Image itemImage = new Image(Utils.getPathResource(Game.class, "images/items/" + item.getTag() + ".png"));
+        Image itemImage = itemIcons.get(item.getTag());
         ImageView itemImageView = handItemsViews.get(item.getType());
         itemImageView.setImage(itemImage);
         if (item.getType() == Item.ItemType.CONSUMABLE) {
@@ -195,6 +215,8 @@ public class HUD {
     }
 
     public void updateConsumableItemAmount() {
-        consumableItemAmount.setText(String.valueOf(Game.sm.get(GameplaySystem.class).getAmountOfCurrentConsumable()));
+        String newAmount = String.valueOf(Game.sm.get(GameplaySystem.class).getAmountOfCurrentConsumable());
+        consumableItemAmount.setText(newAmount);
+        consumableItemAmount.setLayoutX(362 - (newAmount.length() - 1) * 4);
     }
 }

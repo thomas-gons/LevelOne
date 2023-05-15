@@ -14,7 +14,7 @@ public class EntityManager {
     public EntityManager() {}
 
     public void initEntities() {
-        int mobCount = 16;
+        int mobCount = 256;
         addItems();
         this.addEntity(new MapEntity());
         this.addEntity(new Player());
@@ -27,11 +27,14 @@ public class EntityManager {
     private void addItems() {
         this.addEntity(new Item("slime_drop", Item.ItemType.MISC, 1));
         this.addEntity(new Item("fireball", Item.ItemType.SPELL, 250));
-        this.addEntity(new Item("heal_potion", Item.ItemType.CONSUMABLE, 10,
+        this.addEntity(new Item("heal_potion", Item.ItemType.CONSUMABLE, 100,
                 Map.entry("hp", 25f)
         ));
         this.addEntity(new Item("mana_potion", Item.ItemType.CONSUMABLE, 10,
                 Map.entry("mp", 25f)
+        ));
+        this.addEntity(new Item("speed_potion", Item.ItemType.CONSUMABLE, 10,
+                Map.entry("spd", 1f)
         ));
         itemsCount = Entity.globalID;
     }
@@ -45,13 +48,20 @@ public class EntityManager {
         return entitiesWithComponent;
     }
 
+    public Item[] getAllItems() {
+        Item[] items = new Item[itemsCount];
+        for (int i = 0; i < itemsCount; i++) {
+            items[i] = (Item) this.entities.get(i);
+        }
+        return items;
+    }
+
     public MapEntity getMap() {
         return (MapEntity) this.entities.get(itemsCount);
     }
     public Player getPlayer() {
         return (Player) this.entities.get(itemsCount + 1);
     }
-
     public NPC getNPC() {
         return (NPC) this.entities.get(itemsCount + 2);
     }
