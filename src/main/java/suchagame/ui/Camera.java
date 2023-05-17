@@ -17,6 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
+/**
+ * The Camera class represents the camera used for rendering the game.
+ * It provides functionality for updating the camera position based on the player's position,
+ * rendering the game world within the camera viewport, and altering the camera scale.
+ */
 public class Camera {
     public static float scale = 5f;
     public static int relativeWidth = (int) (Game.width / Camera.scale);
@@ -30,18 +37,25 @@ public class Camera {
 
     private final Vector2f position = new Vector2f(0f, 0f);
     private final Vector2f offsetInTiles = new Vector2f(0f, 0f);
+
+    /**
+     * Constructs a new Camera object and initializes the tile sets.
+     */
     public Camera() {
         this.loadTileSets();
         Game.freeSpace = new BoundingBox(
-            (float) relativeWidth / 2,
-            (float) relativeHeight / 2,
-            Game.width - relativeWidth,
-            Game.height - relativeHeight
+                (float) relativeWidth / 2,
+                (float) relativeHeight / 2,
+                Game.width - relativeWidth,
+                Game.height - relativeHeight
         );
     }
 
+    /**
+     * Loads the tile sets for each layer of the game map.
+     */
     private void loadTileSets() {
-        for (int layerID = 0; layerID  < MapEntity.layersCount; layerID++) {
+        for (int layerID = 0; layerID < MapEntity.layersCount; layerID++) {
             Image spriteSheet = new Image(Utils.getPathResource(Game.class, "images/map_layer_" + (layerID + 1) + ".png"));
             int spriteSheetRows = (int) (spriteSheet.getHeight() / MapEntity.defaultTileSize);
             int spriteSheetCols = (int) (spriteSheet.getWidth() / MapEntity.defaultTileSize);
@@ -49,9 +63,13 @@ public class Camera {
         }
     }
 
+    /**
+     * Updates the camera position based on the player's position.
+     */
     public void update() {
         Vector2f playerPosition = Game.em.getPlayer().getComponent(TransformComponent.class).getPosition();
         this.offsetInTiles.set(0f, 0f);
+
         if (Game.freeSpace.getMinX() > playerPosition.getX())
             this.position.setX(0f);
         else if (Game.freeSpace.getMaxX() < playerPosition.getX())
@@ -74,28 +92,34 @@ public class Camera {
                 this.position.getX(),
                 this.position.getY(),
                 relativeWidth,
-                relativeHeight
-        );
+                relativeHeight);
     }
-   public void render(GraphicsContext gc) {
+
+    /**
+     * Renders the game world within the camera viewport.
+     *
+     * @param gc the GraphicsContext used for rendering
+     */
+    public void render(GraphicsContext gc) {
         update();
 
         int[] positionInTiles = new int[]{
                 (int) (this.position.getX() / MapEntity.defaultTileSize),
                 (int) (this.position.getY() / MapEntity.defaultTileSize)
         };
+
         int boundsRows = (positionInTiles[1] + tileCountRows) >= MapEntity.globalTileCountRows ?
-                tileCountRows: tileCountRows + 1;
+                tileCountRows : tileCountRows + 1;
 
         int boundsCols = (positionInTiles[0] + tileCountCols) >= MapEntity.globalTileCountCols ?
-                tileCountCols: tileCountCols + 1;
+                tileCountCols : tileCountCols + 1;
 
         List<int[][]> layers = Game.em.getMap().getLayers();
         for (int layerID = 0; layerID < MapEntity.layersCount; layerID++) {
             int[][] layer = layers.get(layerID);
 
-            for (int y = positionInTiles[1], i = 0;i < boundsRows; y++, i++) {
-                for (int x = positionInTiles[0], j = 0;j < boundsCols; x++, j++) {
+            for (int y = positionInTiles[1], i = 0; i < boundsRows; y++, i++) {
+                for (int x = positionInTiles[0], j = 0; j < boundsCols; x++, j++) {
                     gc.drawImage(
                             tileSetsSpriteSheet.get(layerID).getKey(),
                             (layer[y][x] % tileSetsSpriteSheet.get(layerID).getValue()[1]) * MapEntity.defaultTileSize,
@@ -112,26 +136,39 @@ public class Camera {
         }
     }
 
+    /**
+     * Alters the camera scale by the specified delta.
+     * The camera scale determines the zoom level of the game world.
+     * The zoom level is between 2 and 7 times the default view.
+     *
+     * @param delta the change in scale
+     */
     public void alterScale(float delta) {
         if (Camera.scale + delta < 2f || Camera.scale + delta > 7f)
             return;
+
         Camera.scale += delta;
         Camera.relativeWidth = (int) (Game.width / Camera.scale);
         Camera.relativeHeight = (int) (Game.height / Camera.scale);
-         Game.freeSpace = new BoundingBox(
-            (float) relativeWidth / 2,
-            (float) relativeHeight / 2,
-            Game.width - relativeWidth,
-            Game.height - relativeHeight
+        Game.freeSpace = new BoundingBox(
+                (float) relativeWidth / 2,
+                (float) relativeHeight / 2,
+                Game.width - relativeWidth,
+                Game.height - relativeHeight
         );
-        this.tileCountRows =  (int) Math.ceil((double) relativeHeight / MapEntity.defaultTileSize);
+        this.tileCountRows = (int) Math.ceil((double) relativeHeight / MapEntity.defaultTileSize);
         this.tileCountCols = (int) Math.ceil((double) relativeWidth / MapEntity.defaultTileSize);
-        this.tileSize =  Math.max(Game.width / tileCountCols, Game.height / tileCountRows);
+        this.tileSize = Math.max(Game.width / tileCountCols, Game.height / tileCountRows);
     }
 
+    /**
+     * Returns the position of the camera.
+     *
+     * @return the camera position as a Vector2f
+     * @see Vector2f
+     */
     public Vector2f getPosition() {
         return position;
     }
 
 }
-

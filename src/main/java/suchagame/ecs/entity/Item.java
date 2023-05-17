@@ -10,18 +10,11 @@ public class Item extends Entity {
     private final ItemType type;
     private final int slimeDropValue;
 
-    @SafeVarargs
-    public Item(String tag, ItemType type, int slimeDropValue, Map.Entry<String, Float>... stats) {
+    public Item(String tag, String type, int slimeDropValue) {
         super();
         this.tag = tag;
-        this.type = type;
+        this.type = ItemType.valueOf(type.toUpperCase());
         this.slimeDropValue = slimeDropValue;
-        addComponent(new StatsComponent(
-                new HashMap<>(
-                        Map.ofEntries(stats)
-                ),
-                null
-        ));
     }
 
     public String getTag() {

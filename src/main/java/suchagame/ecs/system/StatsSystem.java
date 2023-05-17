@@ -12,6 +12,7 @@ import suchagame.ecs.entity.Item;
 import suchagame.ecs.entity.Player;
 import suchagame.ecs.entity.Projectile;
 import suchagame.ui.Game;
+import suchagame.ui.Gameover;
 import suchagame.utils.Vector2f;
 
 import java.util.Map;
@@ -36,7 +37,10 @@ public class StatsSystem extends System {
 
                     if (newValue.floatValue() <= 0 && stats.isAlive) {
                         Runnable r = () -> {
-                            Game.em.removeEntity(entity);
+                            if (entity instanceof Player)
+                                Gameover.gameover();
+                            else
+                                Game.em.removeEntity(entity);
                         };
                         stats.isAlive = false;
                         entity.getComponent(PhysicComponent.class).setVelocity(new Vector2f(0));
@@ -50,7 +54,6 @@ public class StatsSystem extends System {
                     }
                 });
                 default -> {
-                    ;
                 }
             }
         }

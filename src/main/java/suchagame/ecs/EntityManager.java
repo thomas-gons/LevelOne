@@ -1,41 +1,67 @@
 package suchagame.ecs;
 
-import suchagame.ecs.component.Component;
-import suchagame.ecs.component.StatsComponent;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import suchagame.Main;
+import suchagame.ecs.component.*;
 import suchagame.ecs.entity.*;
 import suchagame.ecs.system.StatsSystem;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
+
 public class EntityManager {
+
+    private Map<Class<? extends Entity>, JsonNode> entitiesModel = new HashMap<>();
+
     public List<Entity> entities = new ArrayList<>();
     private int itemsCount;
 
-    public EntityManager() {}
+    public EntityManager() {
+    }
 
     public void initEntities() {
         int mobCount = 256;
-        addItems();
-        this.addEntity(new MapEntity());
+        initItems();
         this.addEntity(new Player());
+        this.addEntity(new MapEntity());
         this.addEntity(new NPC());
         for (int i = 0; i < mobCount; i++) {
             this.addEntity(new Mob());
         }
     }
+    @SuppressWarnings("unchecked")
+    private void initItems() {
+        ObjectMapper mapper = new ObjectMapper();
+        URL resourceUrl = Main.class.getResource("config/items.json");
+        JsonNode root;
+        try {
+            root = mapper.readTree(resourceUrl);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Iterator<JsonNode> itemsIterator = root.elements();
+        while (itemsIterator.hasNext()) {
+            JsonNode entry = itemsIterator.next();
+            Iterator<Map.Entry<String, JsonNode>> fieldsIterator = entry.fields();
 
-    private void addItems() {
-        this.addEntity(new Item("slime_drop", Item.ItemType.MISC, 1));
-        this.addEntity(new Item("fireball", Item.ItemType.SPELL, 250));
-        this.addEntity(new Item("heal_potion", Item.ItemType.CONSUMABLE, 100,
-                Map.entry("hp", 25f)
-        ));
-        this.addEntity(new Item("mana_potion", Item.ItemType.CONSUMABLE, 10,
-                Map.entry("mp", 25f)
-        ));
-        this.addEntity(new Item("speed_potion", Item.ItemType.CONSUMABLE, 10,
-                Map.entry("spd", 1f)
-        ));
+            String tag = fieldsIterator.next().getValue().asText();
+            String type = fieldsIterator.next().getValue().asText();
+            int slimeDropValue = fieldsIterator.next().getValue().asInt();
+            Item item = new Item(tag, type, slimeDropValue);
+            if (fieldsIterator.hasNext())
+                item.addComponent(new StatsComponent(
+                        (HashMap<String, Float>) mapper.convertValue(fieldsIterator.next().getValue(), HashMap.class),
+                        null
+                ));
+            entities.add(item);
+        }
         itemsCount = Entity.globalID;
     }
 
@@ -65,13 +91,37 @@ public class EntityManager {
     public NPC getNPC() {
         return (NPC) this.entities.get(itemsCount + 2);
     }
-
+    @SuppressWarnings("unchecked")
     public void addEntity(Entity entity) {
+        if (!entitiesModel.containsKey(entity.getClass())) {
+            ObjectMapper mapper = new ObjectMapper();
+            URL resourceUrl = Main.class.getResource(String.format("config/%s.json", entity.getClass().getSimpleName().toLowerCase()));
+            try {
+                JsonNode root = mapper.readTree(Objects.requireNonNull(resourceUrl));
+                entitiesModel.put(entity.getClass(), root);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = entitiesModel.get(entity.getClass()).fields();
+        while (fieldsIterator.hasNext()) {
+            Map.Entry<String, JsonNode> field = fieldsIterator.next();
+            String rawClassName = String.format("suchagame.ecs.component.%sComponent", field.getKey());
+            try {
+                Class<? extends Component> componentClass = (Class<? extends Component>) Class.forName(rawClassName);
+                Component.instantiateComponent(entity, componentClass, field.getValue());
+
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         this.entities.add(entity);
         if (entity.hasComponent(StatsComponent.class)) {
             StatsSystem.addObserver(entity);
         }
-}
+    }
+    @SuppressWarnings("unchecked")
 
     public void removeEntity(Entity entity) {
         this.entities.remove(entity);

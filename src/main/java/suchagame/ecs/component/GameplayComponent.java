@@ -1,16 +1,21 @@
 package suchagame.ecs.component;
 
 import suchagame.ecs.entity.Item;
+import suchagame.ui.Game;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GameplayComponent extends Component {
     private Map<Item.ItemType, Item> handItems = new HashMap<>();
-    public GameplayComponent(Map<Item.ItemType, Item> handItems) {
+    public GameplayComponent(Map<String, String> handItems) {
         super();
         initHandItems();
-        this.handItems.putAll(handItems);
+        for (Map.Entry<String, String> entry : handItems.entrySet()) {
+            Item.ItemType type = Item.ItemType.valueOf(entry.getKey().toUpperCase());
+            Item item = Game.em.getItem(entry.getValue());
+            this.handItems.put(type, item);
+        }
     }
 
     private void initHandItems() {

@@ -6,6 +6,10 @@ import javafx.util.Duration;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * The GameLoop class handles the main game loop and updates the game state.
+ * It utilizes the JavaFX Timeline to execute game logic at a specified frame rate.
+ */
 public class GameLoop {
     Timeline gameLoop;
     static final int framerate = 60;
@@ -16,6 +20,10 @@ public class GameLoop {
     static float fps;
     private int frameCount = 0;
 
+    /**
+     * Initializes a new instance of the GameLoop class.
+     * The game loop is started automatically upon instantiation.
+     */
     public GameLoop() {
         AtomicLong currentTime = new AtomicLong();
         AtomicLong lastTime = new AtomicLong();

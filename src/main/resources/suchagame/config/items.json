@@ -1,0 +1,31 @@
+{
+    "slime_drop": {
+        "type": "MISC",
+        "value": 1
+    },
+    "fireball": {
+        "type": "SPELL",
+        "value": 250
+    },
+    "heal_potion": {
+        "type": "CONSUMABLE",
+        "value": 100,
+        "effects": {
+            "hp": 25
+        }
+    },
+    "mana_potion": {
+        "type": "CONSUMABLE",
+        "value": 10,
+        "effects": {
+            "mp": 25
+        }
+    },
+    "speed_potion": {
+        "type": "CONSUMABLE",
+        "value": 10,
+        "effects": {
+            "spd": 1
+        }
+    }
+}

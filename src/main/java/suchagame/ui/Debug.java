@@ -13,6 +13,9 @@ import suchagame.ecs.component.TransformComponent;
 
 import java.util.HashMap;
 
+/**
+ * The Debug class provides a debugging view for the game.
+ */
 public class Debug {
     private final AnchorPane debugView;
     private final Timeline debugLoop;
@@ -20,18 +23,17 @@ public class Debug {
     private HashMap<String, Label> debugLabels;
     private boolean debugViewVisible = false;
 
-
+    /**
+     * Initializes a new instance of the Debug class.
+     *
+     * @param debugView The AnchorPane representing the debug view.
+     */
     public Debug(AnchorPane debugView) {
         this.debugView = debugView;
         this.debugLabels = new HashMap<>();
         initDebugView();
         this.debugLoop = new Timeline(new KeyFrame(Duration.millis(GameLoop.frameDuration * GameLoop.sampleFrameSize), event -> {
-            this.debugLabels.get("fps").setText(String.format("FPS: %.2f", GameLoop.fps));
-            this.debugLabels.get("scale").setText("Scale: " + Camera.scale);
-            this.debugLabels.get("entities").setText("Entity Count: " + Game.em.getEntityCount());
-            this.debugLabels.get("position").setText("Player Position: " + Game.em.getPlayer().getComponent(TransformComponent.class).getPosition());
-            this.debugLabels.get("health").setText("Player Health: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("hp"));
-            this.debugLabels.get("mana").setText("Player Mana: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("mp"));
+            updateDebugLabels();
         }));
 
         this.debugLoop.setCycleCount(Timeline.INDEFINITE);
@@ -39,6 +41,9 @@ public class Debug {
         toggleDebugView();
     }
 
+    /**
+     * Initializes the debug view by creating and positioning the debug labels.
+     */
     private void initDebugView() {
         String[] debugLabels = {"fps", "entities", "scale", "position", "health", "mana"};
         for (int i = 0; i < debugLabels.length; i++) {
@@ -51,6 +56,11 @@ public class Debug {
         this.debugView.getChildren().addAll(this.debugLabels.values());
     }
 
+    /**
+     * Initializes a new debug label with the default settings.
+     *
+     * @return The initialized Label object.
+     */
     private Label initLabel() {
         Label label = new Label();
         label.setTextFill(Color.LIGHTGRAY);
@@ -58,6 +68,9 @@ public class Debug {
         return label;
     }
 
+    /**
+     * Toggles the visibility of the debug view when the F3 key is pressed.
+     */
     private void toggleDebugView() {
         debugView.toBack();
         Game.scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -74,5 +87,17 @@ public class Debug {
                 }
             }
         });
+    }
+
+    /**
+     * Updates the debug labels with the current game statistics.
+     */
+    private void updateDebugLabels() {
+        this.debugLabels.get("fps").setText(String.format("FPS: %.2f", GameLoop.fps));
+        this.debugLabels.get("scale").setText("Scale: " + Camera.scale);
+        this.debugLabels.get("entities").setText("Entity Count: " + Game.em.getEntityCount());
+        this.debugLabels.get("position").setText("Player Position: " + Game.em.getPlayer().getComponent(TransformComponent.class).getPosition());
+        this.debugLabels.get("health").setText("Player Health: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("hp"));
+        this.debugLabels.get("mana").setText("Player Mana: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("mp"));
     }
 }

@@ -19,39 +19,6 @@ public class Projectile extends Entity {
     public Projectile(String tag, Vector2f playerVelocity) {
         super();
         this.projectileType = ProjectileType.valueOf(tag.toUpperCase());
-        Vector2f position = Game.em.getPlayer().getComponent(TransformComponent.class).getPosition();
-
-        addComponent(new PhysicComponent(projectileType.boundingBox, projectileType.mass));
-
-        addComponent(new TransformComponent(position.add(projectileType.graphicOffset)));
-        if (projectileType.isStatic) {
-            boolean isFacingRight = playerVelocity.getX() >= 0f;
-            addComponent(new GraphicComponent(String.format("%s_%s.png", projectileType.tag, isFacingRight ? "right" : "left")));
-            getComponent(PhysicComponent.class).setVelocity(new Vector2f(
-                    isFacingRight ? projectileType.spd : -projectileType.spd,
-                    0
-            ));
-        } else {
-            addComponent(new GraphicComponent(String.format("%s.png", projectileType.tag)));
-            getComponent(PhysicComponent.class).setVelocity(new Vector2f(0));
-        }
-
-        addComponent(new AnimationComponent(
-                getComponent(GraphicComponent.class),
-                projectileType.framerate, ACTION.IDLE, 0,
-                projectileType.frameCount
-        ));
-
-
-        addComponent(new StatsComponent(
-                new HashMap<>(Map.of(
-                    "atk", projectileType.atk,
-                    "spd", projectileType.spd
-                )),
-                new HashMap<>(Map.of(
-                    "hp", new SimpleFloatProperty(projectileType.hp)
-                ))
-        ));
     }
 
     public int getManaCost() {

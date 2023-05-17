@@ -28,7 +28,6 @@ public class HUD {
     private Map<String, Image> itemIcons = new HashMap<>();
     private final Map<String, ImageView[]> statsIconsViews = new HashMap<>();
 
-    // get all images of items define in entity manager
 
     private final Pair<String, Image>[] statsIcons = new Pair[]{
             new Pair<>("hp", new Image(Utils.getPathResource(Game.class, "images/heart.png"))),
