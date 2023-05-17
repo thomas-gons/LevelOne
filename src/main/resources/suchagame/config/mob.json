@@ -1,0 +1,55 @@
+{
+    "slime": {
+        "metadata": {
+            "tag": "slime",
+            "spawn": [
+                "northeast",
+                "southeast"
+            ]
+        },
+        "Transform": {
+            "x": 25,
+            "y": 75,
+            "width": 400,
+            "height": 250
+        },
+        "Graphic": {
+            "sprite": "slime.png"
+        },
+        "Animation": {
+            "framerate": 14,
+            "initAction": "random",
+            "initFrame": "random",
+            "framesCountPerAction": [
+                4,
+                18,
+                11
+            ]
+        },
+        "Physic": {
+            "width": 22,
+            "height": 13,
+            "offsetX": -10,
+            "offsetY": 7,
+            "mass": 1
+        },
+        "Stats": {
+            "baseStats": {
+                "hp_max": 100,
+                "mp_max": 100,
+                "atk": 9,
+                "def": 10,
+                "spd": 1
+            },
+            "baseObservableStats": {
+                "hp": 100,
+                "mp": 100
+            }
+        },
+        "Inventory": {
+            "items": {
+                "slime_drop": 0
+            }
+        }
+    }
+}

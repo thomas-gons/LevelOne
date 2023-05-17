@@ -1,0 +1,46 @@
+{
+    "slime_drop": {
+        "metadata": {
+            "tag": "slime_drop",
+            "type": "MISC",
+            "slimeDropValue": 1
+        }
+    },
+    "fireball": {
+        "metadata": {
+            "tag": "fireball",
+            "type": "SPELL",
+            "slimeDropValue": 250
+        }
+    },
+    "heal_potion": {
+        "metadata": {
+            "tag": "heal_potion",
+            "type": "CONSUMABLE",
+            "slimeDropValue": 100
+        },
+        "effects": {
+            "hp": 25
+        }
+    },
+    "mana_potion": {
+        "metadata": {
+            "tag": "mana_potion",
+            "type": "CONSUMABLE",
+            "slimeDropValue": 10
+        },
+        "effects": {
+            "mp": 25
+        }
+    },
+    "speed_potion": {
+        "metadata": {
+            "tag": "speed_potion",
+            "type": "CONSUMABLE",
+            "slimeDropValue": 10
+        },
+        "effects": {
+            "spd": 1
+        }
+    }
+}

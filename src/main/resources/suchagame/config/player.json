@@ -1,49 +1,54 @@
 {
-    "Transform": {
-        "x": 700.0,
-        "y": 550
-    },
-    "Graphic": {
-        "sprite": "flame.png"
-    },
-    "Animation": {
-        "framerate": 12,
-        "initAction": "IDLE",
-        "initFrame": 0,
-        "framesCountRows": [8, 8]
-    },
-    "Physic": {
-        "width": 25,
-        "height": 35,
-        "offsetX": -12,
-        "offsetY": -8,
-        "mass": 100
-    },
-    "Stats": {
-        "baseStats": {
-            "hp_max": 100,
-            "mp_max": 100,
-            "atk": 10,
-            "def": 10,
-            "spd": 10
+    "player": {
+        "Transform": {
+            "x": 700.0,
+            "y": 550
         },
-        "baseObservableStats": {
-            "hp": 100,
-            "mp": 100
-        }
-    },
-    "Inventory": {
-        "inventory": {
-            "slime_drop": 100,
-            "fireball": 1,
-            "heal_potion": 3,
-            "mana_potion": 2
-        }
-    },
-    "Gameplay": {
-        "handItems": {
-            "SPELL": "fireball",
-            "CONSUMABLE": "heal_potion"
+        "Graphic": {
+            "sprite": "flame.png"
+        },
+        "Animation": {
+            "framerate": 12,
+            "initAction": "idle",
+            "initFrame": 0,
+            "framesCountPerAction": [
+                8,
+                8
+            ]
+        },
+        "Physic": {
+            "width": 25,
+            "height": 35,
+            "offsetX": -12,
+            "offsetY": -8,
+            "mass": 100
+        },
+        "Stats": {
+            "baseStats": {
+                "hp_max": 100.0,
+                "mp_max": 100.0,
+                "atk": 10.0,
+                "def": 10.0,
+                "spd": 10.0
+            },
+            "baseObservableStats": {
+                "hp": 100.0,
+                "mp": 100.0
+            }
+        },
+        "Inventory": {
+            "inventory": {
+                "slime_drop": 100,
+                "fireball": 1,
+                "heal_potion": 3,
+                "mana_potion": 2
+            }
+        },
+        "Gameplay": {
+            "handItems": {
+                "SPELL": "fireball",
+                "CONSUMABLE": "heal_potion"
+            }
         }
     }
 }

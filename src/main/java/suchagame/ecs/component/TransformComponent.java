@@ -1,9 +1,10 @@
 package suchagame.ecs.component;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import javafx.geometry.BoundingBox;
-import javafx.geometry.Rectangle2D;
-import suchagame.ecs.entity.MapEntity;
+
+import suchagame.ecs.entity.Mob;
 import suchagame.ui.Game;
 import suchagame.utils.Vector2f;
 
@@ -12,15 +13,24 @@ public class TransformComponent extends Component {
     private Vector2f position;
     private Vector2f virtualPosition = new Vector2f(0f, 0f);
 
-    public TransformComponent(Vector2f position) {
-        this.position = position;
-    }
+    private final Vector2f spawnOrigin;
+    @JsonCreator
+    public TransformComponent(int offsetX, int offsetY) {
+        Vector2f offset = new Vector2f(offsetX, offsetY);
+        this.spawnOrigin = Game.em.getPlayer().getComponent(TransformComponent.class)
+                .getPositionDeepCopy().add(offset);
 
+        this.position = this.spawnOrigin;
+    }
+    @JsonCreator
     public TransformComponent(float x, float y) {
-        this.position = new Vector2f(x, y);
+        this.spawnOrigin = new Vector2f(x, y);
+        this.position = this.spawnOrigin;
     }
-
-    public TransformComponent(BoundingBox area) {
+    @JsonCreator
+    public TransformComponent(String[] eventualSpawnAreas) {
+        BoundingBox area = Mob.getRandomSpawnArea(eventualSpawnAreas);
+        this.spawnOrigin = new Vector2f((float) area.getCenterX(), (float) area.getCenterY());
         LayersComponent layersComponent = Game.em.getMap().getComponent(LayersComponent.class);
 
         // rejection sampling

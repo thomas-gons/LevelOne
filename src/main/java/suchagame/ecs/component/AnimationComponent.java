@@ -1,5 +1,6 @@
 package suchagame.ecs.component;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import suchagame.utils.Vector2f;
 
 import java.util.Arrays;
@@ -13,24 +14,50 @@ public class AnimationComponent extends Component {
     private final int actionCount;
     private long lastUpdate = java.lang.System.currentTimeMillis();
 
-
+    private AnimationComponent(
+            GraphicComponent graphicComponent, int framerate,
+            int[] framesCountPerRow)
+    {
+        this.framerate = framerate;
+        this.framesCountPerRow = framesCountPerRow;
+        this.actionCount = framesCountPerRow.length - 1;
+        graphicComponent.setWidth(graphicComponent.getWidth() / Arrays.stream(framesCountPerRow).max().getAsInt());
+        graphicComponent.setHeight(graphicComponent.getHeight() / framesCountPerRow.length);
+    }
+    @JsonCreator
     public AnimationComponent(
             GraphicComponent graphicComponent, int framerate,
             ACTION initAction, int initFrame,
             int[] framesCountPerRow
     ) {
-        this.framerate = framerate;
+        this(graphicComponent, framerate, framesCountPerRow);
         this.currentAction = initAction;
-        this.currentFrame = (initFrame != -1) ?
-                initFrame : (int) (Math.random() * framesCountPerRow[initAction.ordinal()]);
+        this.currentFrame = initFrame;
 
-        this.framesCountPerRow = framesCountPerRow;
-        this.actionCount = framesCountPerRow.length - 1;
-        graphicComponent.setWidth(graphicComponent.getWidth() / Arrays.stream(framesCountPerRow).max().getAsInt());
-        graphicComponent.setHeight(graphicComponent.getHeight() / framesCountPerRow.length);
         graphicComponent.setOrigin(new int[]{
                 graphicComponent.getWidth() * initFrame,
                 graphicComponent.getHeight() * getActionRow(initAction)
+        });
+    }
+    @JsonCreator
+    public AnimationComponent(
+            GraphicComponent graphicComponent, int framerate,
+            String specialAction, String specialFrame,
+            int[] framesCountPerRow)
+    {
+        this(graphicComponent, framerate, framesCountPerRow);
+
+        if (specialAction.equals("random")) {
+            this.currentAction = ACTION.values()[(int) (Math.random() * framesCountPerRow.length)];
+        }
+        if (specialFrame.equals("random")) {
+            assert currentAction != null;
+            this.currentFrame = (int) (Math.random() * framesCountPerRow[currentAction.ordinal()]);
+        }
+
+        graphicComponent.setOrigin(new int[]{
+                graphicComponent.getWidth() * currentFrame,
+                graphicComponent.getHeight() * getActionRow(currentAction)
         });
     }
 

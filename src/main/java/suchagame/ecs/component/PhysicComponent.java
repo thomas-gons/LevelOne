@@ -1,5 +1,6 @@
 package suchagame.ecs.component;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import javafx.geometry.BoundingBox;
 import suchagame.utils.Vector2f;
 
@@ -9,7 +10,7 @@ public class PhysicComponent extends Component {
     private final float mass;
 
     private Vector2f velocity = new Vector2f(0f);
-
+    @JsonCreator
     public PhysicComponent(
             int width, int height,
             int offsetX, int offsetY,
@@ -18,10 +19,14 @@ public class PhysicComponent extends Component {
         boundingBox = new BoundingBox(offsetX, offsetY, width, height);
         this.mass = mass;
     }
+    @JsonCreator
+    public PhysicComponent(
+            int width, int height,
+            int offsetX, int offsetY,
+            float mass, float baseVelocity) {
 
-    public PhysicComponent(BoundingBox boundingBox, float mass) {
-        this.boundingBox = boundingBox;
-        this.mass = mass;
+        this(width, height, offsetX, offsetY, mass);
+        this.velocity = new Vector2f(baseVelocity);
     }
 
 

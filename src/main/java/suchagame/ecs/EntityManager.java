@@ -1,7 +1,6 @@
 package suchagame.ecs;
 
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import suchagame.Main;
 import suchagame.ecs.component.*;
 import suchagame.ecs.entity.*;
@@ -9,16 +8,18 @@ import suchagame.ecs.system.StatsSystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import suchagame.utils.Utils;
 
 
 import java.io.IOException;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.util.*;
 
 
 public class EntityManager {
 
-    private Map<Class<? extends Entity>, JsonNode> entitiesModel = new HashMap<>();
+    private Map<Class<? extends Entity>, Map<String, JsonNode>> entitiesModel = new HashMap<>();
 
     public List<Entity> entities = new ArrayList<>();
     private int itemsCount;
@@ -27,42 +28,84 @@ public class EntityManager {
     }
 
     public void initEntities() {
-        int mobCount = 256;
-        initItems();
-        this.addEntity(new Player());
-        this.addEntity(new MapEntity());
-        this.addEntity(new NPC());
-        for (int i = 0; i < mobCount; i++) {
-            this.addEntity(new Mob());
+        addEntity(Item.class, "*");
+        addEntity(MapEntity.class);
+        addEntity(Player.class);
+        addEntity(NPC.class);
+    }
+
+
+    public void addEntity(Class<? extends Entity> entityClass, String tag) {
+        if (!entitiesModel.containsKey(entityClass)) {
+            ObjectMapper mapper = new ObjectMapper();
+            String rawEntityName = entityClass.getSimpleName().replace("Entity", "").toLowerCase();
+            URL resourceUrl = Main.class.getResource(String.format("config/%s.json", rawEntityName));
+            try {
+                JsonNode root = mapper.readTree(Objects.requireNonNull(resourceUrl));
+                Iterator<Map.Entry<String, JsonNode>> entitiesIterator = root.fields();
+                entitiesModel.put(entityClass, new HashMap<>());
+                while (entitiesIterator.hasNext()) {
+                    Map.Entry<String, JsonNode> entity = entitiesIterator.next();
+                    entitiesModel.get(entityClass).put(entity.getKey(), entity.getValue());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (tag == null) {
+            StringBuilder sb = new StringBuilder(entityClass.getSimpleName());
+            sb.setCharAt(0, Character.toLowerCase(sb.charAt(0)));
+            tag = sb.toString();
+        }
+        if (tag.equals("*")) {
+            for (Map.Entry<String, JsonNode> entity : entitiesModel.get(entityClass).entrySet()) {
+                addEntity(entityClass, entity.getKey());
+            }
+            return;
+        }
+        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = entitiesModel.get(entityClass).get(tag).fields();
+        Map.Entry<String, JsonNode> field = fieldsIterator.next();
+        Entity entity = initEntity(entityClass, field);
+        this.entities.add(entity);
+        Component.addNeededComponents(entity, fieldsIterator, field);
+
+        if (entity.hasComponent(StatsComponent.class)) {
+            StatsSystem.addObserver(entity);
         }
     }
-    @SuppressWarnings("unchecked")
-    private void initItems() {
-        ObjectMapper mapper = new ObjectMapper();
-        URL resourceUrl = Main.class.getResource("config/items.json");
-        JsonNode root;
-        try {
-            root = mapper.readTree(resourceUrl);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Iterator<JsonNode> itemsIterator = root.elements();
-        while (itemsIterator.hasNext()) {
-            JsonNode entry = itemsIterator.next();
-            Iterator<Map.Entry<String, JsonNode>> fieldsIterator = entry.fields();
 
-            String tag = fieldsIterator.next().getValue().asText();
-            String type = fieldsIterator.next().getValue().asText();
-            int slimeDropValue = fieldsIterator.next().getValue().asInt();
-            Item item = new Item(tag, type, slimeDropValue);
-            if (fieldsIterator.hasNext())
-                item.addComponent(new StatsComponent(
-                        (HashMap<String, Float>) mapper.convertValue(fieldsIterator.next().getValue(), HashMap.class),
-                        null
-                ));
-            entities.add(item);
+    public void addEntity(Class<? extends Entity> entityClass) {
+        addEntity(entityClass, null);
+    }
+    @SuppressWarnings("unchecked")
+    public Entity initEntity(
+            Class<? extends Entity> entityClass,
+            Map.Entry<String, JsonNode> field)
+    {
+        try {
+            Constructor<? extends Entity> constructor = (Constructor<? extends Entity>) entityClass.getConstructors()[0];
+            if (!field.getKey().equals("metadata")) {
+                return constructor.newInstance();
+            }
+
+            Class<?>[] parametersType = constructor.getParameterTypes();
+            Iterator<Map.Entry<String, JsonNode>> metadataIterator = field.getValue().fields();
+            Object[] args = new Object[parametersType.length];
+            args = Utils.getConstructorArguments(
+                    metadataIterator, constructor,
+                    parametersType, args, 0
+            );
+            return constructor.newInstance(args);
+
+
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
         }
-        itemsCount = Entity.globalID;
+        return null;
+    }
+
+    public void removeEntity(Entity entity) {
+        this.entities.remove(entity);
     }
 
     public <T extends Component> List<Entity> getAllWithComponent(Class<T> componentClass) {
@@ -72,6 +115,14 @@ public class EntityManager {
                 entitiesWithComponent.add(entity);
         }
         return entitiesWithComponent;
+    }
+
+    public Entity getLastEntity() {
+        return this.entities.get(this.entities.size() - 1);
+    }
+
+    public int getEntityCount() {
+        return this.entities.size();
     }
 
     public Item[] getAllItems() {
@@ -91,45 +142,7 @@ public class EntityManager {
     public NPC getNPC() {
         return (NPC) this.entities.get(itemsCount + 2);
     }
-    @SuppressWarnings("unchecked")
-    public void addEntity(Entity entity) {
-        if (!entitiesModel.containsKey(entity.getClass())) {
-            ObjectMapper mapper = new ObjectMapper();
-            URL resourceUrl = Main.class.getResource(String.format("config/%s.json", entity.getClass().getSimpleName().toLowerCase()));
-            try {
-                JsonNode root = mapper.readTree(Objects.requireNonNull(resourceUrl));
-                entitiesModel.put(entity.getClass(), root);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = entitiesModel.get(entity.getClass()).fields();
-        while (fieldsIterator.hasNext()) {
-            Map.Entry<String, JsonNode> field = fieldsIterator.next();
-            String rawClassName = String.format("suchagame.ecs.component.%sComponent", field.getKey());
-            try {
-                Class<? extends Component> componentClass = (Class<? extends Component>) Class.forName(rawClassName);
-                Component.instantiateComponent(entity, componentClass, field.getValue());
-
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        this.entities.add(entity);
-        if (entity.hasComponent(StatsComponent.class)) {
-            StatsSystem.addObserver(entity);
-        }
-    }
-    @SuppressWarnings("unchecked")
-
-    public void removeEntity(Entity entity) {
-        this.entities.remove(entity);
-    }
-
-    public int getEntityCount() {
-        return this.entities.size();
-    }
 
     public Item getItem(String tag) {
         for (Entity entity : this.entities) {

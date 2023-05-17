@@ -1,5 +1,6 @@
 package suchagame.ecs.component;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import suchagame.ecs.entity.Item;
 import suchagame.ui.Game;
 
@@ -8,6 +9,7 @@ import java.util.Map;
 
 public class GameplayComponent extends Component {
     private Map<Item.ItemType, Item> handItems = new HashMap<>();
+    @JsonCreator
     public GameplayComponent(Map<String, String> handItems) {
         super();
         initHandItems();

@@ -1,6 +1,10 @@
 package suchagame.ecs.component;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import javafx.beans.property.SimpleFloatProperty;
+import suchagame.ecs.entity.Entity;
+import suchagame.ecs.entity.Projectile;
+import suchagame.ui.Game;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,13 +14,16 @@ public class StatsComponent extends Component {
     public boolean isAlive = true;
     private Map<String, Float> stats;
     private Map<String, SimpleFloatProperty> observableStats;
+    @JsonCreator
     public StatsComponent(Map<String, Float> baseStats,
                           Map<String, Float> baseObservableStats) {
 
         this.stats = baseStats;
         this.observableStats = new HashMap<>();
-        for (Map.Entry<String, Float> entry : baseObservableStats.entrySet()) {
-            observableStats.put(entry.getKey(), new SimpleFloatProperty(entry.getValue()));
+        if (baseObservableStats != null) {
+            for (Map.Entry<String, Float> entry : baseObservableStats.entrySet()) {
+                observableStats.put(entry.getKey(), new SimpleFloatProperty(entry.getValue()));
+            }
         }
     }
 

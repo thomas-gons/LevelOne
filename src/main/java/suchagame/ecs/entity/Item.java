@@ -1,10 +1,5 @@
 package suchagame.ecs.entity;
 
-import suchagame.ecs.component.StatsComponent;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class Item extends Entity {
     private final String tag;
     private final ItemType type;

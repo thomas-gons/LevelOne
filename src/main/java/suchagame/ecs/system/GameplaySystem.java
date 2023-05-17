@@ -17,15 +17,14 @@ public class GameplaySystem extends System {
        }
        String tag = Game.em.getPlayer().getComponent(GameplayComponent.class).getHandItem(Item.ItemType.SPELL).getTag();
        StatsComponent statsComponent = Game.em.getPlayer().getComponent(StatsComponent.class);
-       if (statsComponent.getObservableStat("mp") < Projectile.ProjectileType.getManaCost(tag))
+       if (statsComponent.getObservableStat("mp") < ((Projectile) Game.em.getLastEntity()).getManaCost())
              return;
 
        AnimationComponent animationComponent = Game.em.getPlayer().getComponent(AnimationComponent.class);
-       Vector2f playerVelocity = Game.em.getPlayer().getComponent(PhysicComponent.class).getVelocityDeepCopy();
        Runnable r = () -> {
-           Projectile projectile = new Projectile(tag, playerVelocity);
-           statsComponent.alterObservableStat("mp", -projectile.getManaCost());
-           Game.em.addEntity(projectile);
+           Game.em.addEntity(Projectile.class, tag);
+           int manaCost = ((Projectile) Game.em.getLastEntity()).getManaCost();
+           statsComponent.alterObservableStat("mp", -manaCost);
            animationComponent.setCurrentAction(AnimationComponent.ACTION.IDLE);
            regenCooldownTimer = new Timer(200, () -> {
                StatsSystem.regenTimeline.play();

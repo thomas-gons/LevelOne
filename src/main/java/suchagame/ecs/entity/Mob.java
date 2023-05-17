@@ -12,14 +12,11 @@ import java.util.Map;
 
 public class Mob extends Entity {
     private static final Map<String, BoundingBox> spawnAreas = initSpawnAreas();
-    private final Vector2f spawnOrigin;
     public Mob() {
         super();
-        BoundingBox spawnArea = spawnAreas.get("all"); // (Math.random() > 0.5f) ? "northeast" : "southeast");
-        this.spawnOrigin = new Vector2f((float) spawnArea.getCenterX(), (float) spawnArea.getCenterY());
     }
 
-    private static Map<String, BoundingBox> initSpawnAreas() {
+    public static Map<String, BoundingBox> initSpawnAreas() {
         return new HashMap<>(Map.of(
                 "northeast",
                 new BoundingBox(1150, 25,400, 250),
@@ -30,7 +27,7 @@ public class Mob extends Entity {
         ));
     }
 
-    public Vector2f getSpawnOrigin() {
-        return spawnOrigin;
+    public static BoundingBox getRandomSpawnArea(String[] eventualSpawnAreas) {
+        return spawnAreas.get(eventualSpawnAreas[(int) (Math.random() * eventualSpawnAreas.length)]);
     }
 }

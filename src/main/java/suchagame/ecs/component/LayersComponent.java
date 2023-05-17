@@ -1,5 +1,6 @@
 package suchagame.ecs.component;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import suchagame.Main;
 import suchagame.ecs.entity.MapEntity;
 import suchagame.utils.Vector2f;
@@ -24,7 +25,7 @@ public class LayersComponent extends Component {
              163, 164, 165, 166, 167, 168
 
      };
-
+     @JsonCreator
      public LayersComponent() {
          this.layers = new ArrayList<>(MapEntity.layersCount);
          for (int layerID = 0; layerID < MapEntity.layersCount; layerID++) {
