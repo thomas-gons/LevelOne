@@ -2,7 +2,7 @@
     "player": {
         "Transform": {
             "x": 700.0,
-            "y": 550
+            "y": 550.0
         },
         "Graphic": {
             "sprite": "flame.png"
@@ -21,7 +21,7 @@
             "height": 35,
             "offsetX": -12,
             "offsetY": -8,
-            "mass": 100
+            "mass": 100.0
         },
         "Stats": {
             "baseStats": {

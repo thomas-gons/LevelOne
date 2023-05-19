@@ -1,7 +1,6 @@
 package suchagame.ecs.component;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import suchagame.utils.Vector2f;
 
 import java.util.Arrays;
 

@@ -20,7 +20,7 @@
             "slimeDropValue": 100
         },
         "effects": {
-            "hp": 25
+            "hp": 25.0
         }
     },
     "mana_potion": {
@@ -30,7 +30,7 @@
             "slimeDropValue": 10
         },
         "effects": {
-            "mp": 25
+            "mp": 25.0
         }
     },
     "speed_potion": {

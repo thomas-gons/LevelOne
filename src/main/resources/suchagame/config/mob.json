@@ -1,17 +1,14 @@
 {
     "slime": {
         "metadata": {
-            "tag": "slime",
+            "tag": "slime"
+
+        },
+        "Transform": {
             "spawn": [
                 "northeast",
                 "southeast"
             ]
-        },
-        "Transform": {
-            "x": 25,
-            "y": 75,
-            "width": 400,
-            "height": 250
         },
         "Graphic": {
             "sprite": "slime.png"
@@ -31,24 +28,24 @@
             "height": 13,
             "offsetX": -10,
             "offsetY": 7,
-            "mass": 1
+            "mass": 1.0
         },
         "Stats": {
             "baseStats": {
-                "hp_max": 100,
-                "mp_max": 100,
-                "atk": 9,
-                "def": 10,
-                "spd": 1
+                "hp_max": 100.0,
+                "mp_max": 100.0,
+                "atk": 9.0,
+                "def": 10.0,
+                "spd": 1.0
             },
             "baseObservableStats": {
-                "hp": 100,
-                "mp": 100
+                "hp": 100.0,
+                "mp": 100.0
             }
         },
         "Inventory": {
             "items": {
-                "slime_drop": 0
+                "slime_drop": 20
             }
         }
     }

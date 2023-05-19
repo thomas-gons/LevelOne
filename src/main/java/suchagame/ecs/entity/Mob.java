@@ -12,8 +12,11 @@ import java.util.Map;
 
 public class Mob extends Entity {
     private static final Map<String, BoundingBox> spawnAreas = initSpawnAreas();
-    public Mob() {
+
+    private final String tag;
+    public Mob(String tag) {
         super();
+        this.tag = tag;
     }
 
     public static Map<String, BoundingBox> initSpawnAreas() {

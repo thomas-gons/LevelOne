@@ -49,41 +49,39 @@ public class Game extends Application {
      *
      */
    @Override
-public void start(Stage stage) throws Exception {
-    FXMLLoader fxmlLoader = new FXMLLoader(Game.class.getResource("game.fxml"));
-    root = fxmlLoader.load();
+    public void start(Stage stage) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(Game.class.getResource("game.fxml"));
+        root = fxmlLoader.load();
 
-    canvas = (Canvas) root.lookup("#game_canvas");
-    gc = canvas.getGraphicsContext2D();
-    gc.setImageSmoothing(false);
+        canvas = (Canvas) root.lookup("#game_canvas");
+        gc = canvas.getGraphicsContext2D();
+        gc.setImageSmoothing(false);
 
-    scene = new Scene(root, width, height);
+        scene = new Scene(root, width, height);
 
-    camera = new Camera();
-    em = new EntityManager();
-    em.initEntities();
-    sm = new SystemManager();
+        camera = new Camera();
+        em = new EntityManager();
+        em.initEntities();
+        sm = new SystemManager();
 
-    hud = new HUD((AnchorPane) root.lookup("#game_hud"));
-    npcMenu = new NPCMenu((AnchorPane) root.lookup("#game_npc_menu"));
+        hud = new HUD((AnchorPane) root.lookup("#game_hud"));
+        npcMenu = new NPCMenu((AnchorPane) root.lookup("#game_npc_menu"));
 
-    scene.addEventHandler(ScrollEvent.SCROLL, event -> {
-        camera.alterScale((float) event.getDeltaY() / 1000 * 25f);
-    });
-    scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-        if (event.getCode() == KeyCode.SPACE) {
-            lightEnabled = !lightEnabled;
-            Game.canvas.setEffect(null);
-        }
-    });
-    new GameLoop();
-    new Debug((AnchorPane) root.lookup("#game_debug"));
+        scene.addEventHandler(ScrollEvent.SCROLL, event -> {
+            camera.alterScale((float) event.getDeltaY() / 1000 * 25f);
+        });
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.SPACE) {
+                lightEnabled = !lightEnabled;
+                Game.canvas.setEffect(null);
+            }
+        });
+        new GameLoop();
+        new Debug((AnchorPane) root.lookup("#game_debug"));
 
-    stage.setScene(scene);
-    stage.setFullScreen(true);
-    stage.setFullScreenExitHint("");
-    stage.show();
-
-    }
-
+        stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.setFullScreenExitHint("");
+        stage.show();
+   }
 }

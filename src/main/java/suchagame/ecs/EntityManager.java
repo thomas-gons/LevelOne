@@ -22,8 +22,9 @@ public class EntityManager {
     private Map<Class<? extends Entity>, Map<String, JsonNode>> entitiesModel = new HashMap<>();
 
     public List<Entity> entities = new ArrayList<>();
-    private int itemsCount;
+    private int itemsCount = 5;
 
+    private int mobsCount = 32;
     public EntityManager() {
     }
 
@@ -31,7 +32,10 @@ public class EntityManager {
         addEntity(Item.class, "*");
         addEntity(MapEntity.class);
         addEntity(Player.class);
-        addEntity(NPC.class);
+        addEntity(Npc.class, "*");
+        for (int i = 0; i < mobsCount; i++) {
+            addEntity(Mob.class, "slime");
+        }
     }
 
 
@@ -64,9 +68,8 @@ public class EntityManager {
             return;
         }
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = entitiesModel.get(entityClass).get(tag).fields();
-        Map.Entry<String, JsonNode> field = fieldsIterator.next();
-        Entity entity = initEntity(entityClass, field);
-        this.entities.add(entity);
+        Map.Entry<String, JsonNode> field = initEntity(entityClass, fieldsIterator);
+        Entity entity = getLastEntity();
         Component.addNeededComponents(entity, fieldsIterator, field);
 
         if (entity.hasComponent(StatsComponent.class)) {
@@ -78,14 +81,16 @@ public class EntityManager {
         addEntity(entityClass, null);
     }
     @SuppressWarnings("unchecked")
-    public Entity initEntity(
+    public Map.Entry<String, JsonNode> initEntity(
             Class<? extends Entity> entityClass,
-            Map.Entry<String, JsonNode> field)
+            Iterator<Map.Entry<String, JsonNode>> fieldIterator)
     {
         try {
+            Map.Entry<String, JsonNode> field = fieldIterator.next();
             Constructor<? extends Entity> constructor = (Constructor<? extends Entity>) entityClass.getConstructors()[0];
             if (!field.getKey().equals("metadata")) {
-                return constructor.newInstance();
+                this.entities.add(constructor.newInstance());
+                return field;
             }
 
             Class<?>[] parametersType = constructor.getParameterTypes();
@@ -95,7 +100,11 @@ public class EntityManager {
                     metadataIterator, constructor,
                     parametersType, args, 0
             );
-            return constructor.newInstance(args);
+            this.entities.add(constructor.newInstance(args));
+            if (fieldIterator.hasNext()) {
+                return fieldIterator.next();
+            }
+            return field;
 
 
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
@@ -139,8 +148,8 @@ public class EntityManager {
     public Player getPlayer() {
         return (Player) this.entities.get(itemsCount + 1);
     }
-    public NPC getNPC() {
-        return (NPC) this.entities.get(itemsCount + 2);
+    public Npc getNPC() {
+        return (Npc) this.entities.get(itemsCount + 2);
     }
 
 

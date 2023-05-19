@@ -20,7 +20,7 @@ public abstract class Component {
             JsonNode> field)
     {
 
-        while (fieldsIterator.hasNext()) {
+        while (true) {
             String rawClassName = String.format("suchagame.ecs.component.%sComponent", field.getKey());
             try {
                 Class<? extends Component> componentClass = (Class<? extends Component>) Class.forName(rawClassName);
@@ -29,6 +29,11 @@ public abstract class Component {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
+
+            if (!fieldsIterator.hasNext()) {
+                break;
+            }
+
             field = fieldsIterator.next();
         }
     }
