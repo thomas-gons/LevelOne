@@ -22,19 +22,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+/**
+ * Heads-up display
+ */
 public class HUD {
     private final AnchorPane root;
     private final Font customFont;
     private Map<String, Image> itemIcons = new HashMap<>();
     private final Map<String, ImageView[]> statsIconsViews = new HashMap<>();
 
-    // get all images of items define in entity manager
-
     private final Pair<String, Image>[] statsIcons = new Pair[]{
             new Pair<>("hp", new Image(Utils.getPathResource(Game.class, "images/heart.png"))),
             new Pair<>("mp", new Image(Utils.getPathResource(Game.class, "images/mana.png")))
     };
-    private final int statsIconsCount = 5;
+    private final int statsIconsCount = Game.em.getItemsCount();
 
     private final Image emptySlot = new Image(Utils.getPathResource(Game.class, "images/empty_slot.png"));
     private Map<Item.ItemType, ImageView> handItemsViews = new HashMap<>();
@@ -42,9 +43,15 @@ public class HUD {
     private Label consumableItemAmount;
     private Label slimeDropAmount;
 
+    /**
+     * Initializes all HUD elements and load custom font
+     * @param root root pane
+     * @throws IOException if font file is not found
+     */
     public HUD(AnchorPane root) throws IOException {
         this.root = root;
         URL fontUrl = getClass().getResource("fonts/disposabledroid-bb.regular.ttf");
+        assert fontUrl != null;
         customFont = Font.loadFont(fontUrl.openStream(), 32);
         initAllStatBars();
         initItemsIcons();
@@ -52,6 +59,9 @@ public class HUD {
         initSlimeDrop();
     }
 
+    /**
+     * init all stats bars (e.g. HP, MP, ...)
+     */
     private void initAllStatBars() {
         for (int i = 0; i < statsIcons.length; i++) {
             Image statIcon = statsIcons[i].getValue();
@@ -75,6 +85,9 @@ public class HUD {
         }
     }
 
+    /**
+     * init all hand slots (e.g. spell, consumable, ...)
+     */
     private void initHandSlot() {
         ImageView[] emptySlotViews = new ImageView[3];
         int offset = 64;
@@ -128,6 +141,9 @@ public class HUD {
         this.root.getChildren().addAll(consumableItemBackground, consumableItemAmount);
     }
 
+    /**
+     * init slime drop icon and amount
+     */
     private void initSlimeDrop() {
         Image slimeDrop = getItemIcon("slime_drop");
         ImageView slimeDropView = new ImageView(slimeDrop);
@@ -141,12 +157,15 @@ public class HUD {
         slimeDropAmount = new Label();
         slimeDropAmount.setTextFill(Color.LIGHTGRAY);
         slimeDropAmount.setFont(customFont);
-        slimeDropAmount.setText("100");
+        slimeDropAmount.setText(String.valueOf(Game.em.getPlayer().getComponent(InventoryComponent.class).getSlimeDropAmount()));
         slimeDropAmount.setLayoutX(Game.width - slimeDrop.getWidth() * 3 + 32);
         slimeDropAmount.setLayoutY(Game.height - slimeDrop.getHeight() - 14);
         this.root.getChildren().add(slimeDropAmount);
     }
 
+    /**
+     * init all item icons
+     */
     private void initItemsIcons() {
         for (Item item: Game.em.getAllItems()) {
             this.itemIcons.put(
@@ -155,23 +174,47 @@ public class HUD {
         }
     }
 
+    /**
+     * resize the custom font
+     * @param size new font size
+     * @return the resized font
+     */
     public Font resizeFont(int size) {
         return Font.font(customFont.getFamily(), size);
     }
 
+    /**
+     * get the item icon by tag
+     * @param tag item tag
+     * @return the item icon
+     */
     public Image getItemIcon(String tag) {
         return itemIcons.get(tag);
     }
 
+    /**
+     * get the custom font
+     * @return the custom font
+     */
     public Font getCustomFont() {
         return customFont;
     }
 
+    /**
+     * update the slime drop amount
+     */
     public void updateSlimeDropAmount() {
-        slimeDropAmount.setText(String.valueOf(Game.em.getPlayer().getComponent(InventoryComponent.class).getItemAmount("slimeDrop")));
+        slimeDropAmount.setText(String.valueOf(Game.em.getPlayer().getComponent(InventoryComponent.class).getSlimeDropAmount()));
     }
 
+    /**
+     * update the stat bar of the given stat tag
+     */
     public void updateStatBar(String statTag, float newStatValue) {
+        /*
+            as we have three possible icons for each stat (full, half, empty)
+            we need to calculate how many full, half and empty icons we need to display
+         */
         float maxStatValue = Game.em.getPlayer().getComponent(StatsComponent.class).getStat(String.format("%s_max", statTag));
         int fullSymbolCount = (int) Math.floor(statsIconsCount * newStatValue / maxStatValue);
         int halfSymbolCount = (statsIconsCount * newStatValue / maxStatValue) % 1f > 0.5f ? 1: 0;
@@ -205,6 +248,10 @@ public class HUD {
         }
     }
 
+    /**
+     * update the hand slot with the given item
+     * @param item the new item
+     */
     public void updateHandSlot(Item item) {
         Image itemImage = itemIcons.get(item.getTag());
         ImageView itemImageView = handItemsViews.get(item.getType());
@@ -214,6 +261,9 @@ public class HUD {
         }
     }
 
+    /**
+     * update the consumable item amount
+     */
     public void updateConsumableItemAmount() {
         String newAmount = String.valueOf(Game.sm.get(GameplaySystem.class).getAmountOfCurrentConsumable());
         consumableItemAmount.setText(newAmount);

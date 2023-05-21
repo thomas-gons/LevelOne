@@ -1,0 +1,8 @@
+module:suchagame.suchagame
+suchagame
+suchagame.ecs
+suchagame.ecs.component
+suchagame.ecs.entity
+suchagame.ecs.system
+suchagame.ui
+suchagame.utils

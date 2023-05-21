@@ -10,12 +10,20 @@ import suchagame.utils.Vector2f;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
+/**
+ * Base class for all projectiles.
+ */
 public class Projectile extends Entity {
 
+    // define projectile type in enum
     private final ProjectileType projectileType;
 
+    /**
+     * Constructs a Projectile object with all the necessary components using the projectile type enum.
+     * hard coded for now
+     * @param tag the tag of the projectile (e.g. "fireball
+     * @param playerVelocity the velocity of the player
+     */
     public Projectile(String tag, Vector2f playerVelocity) {
         super();
         this.projectileType = ProjectileType.valueOf(tag.toUpperCase());
@@ -58,12 +66,16 @@ public class Projectile extends Entity {
         return projectileType.manaCost;
     }
 
+    /**
+     * Enum for projectile types.
+     * Each projectile type has its own properties.
+     */
     public enum ProjectileType {
         FIREBALL("fireball", 10, true,
                 12, new int[]{5, 7},
                 new Vector2f(7, 37),
                 new BoundingBox(-8, -6, 17, 15), 20,
-                100f, 3f, 50000000f);
+                100f, 3f, 50f);
 
         private final String tag;
         private final int manaCost;

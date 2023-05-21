@@ -7,7 +7,15 @@ import suchagame.ui.Game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Base class for all NPCs.
+ */
 public class NPC extends Entity {
+
+    /**
+     * Constructs a NPC object with all the necessary components.
+     * hard coded for now
+     */
     public NPC() {
         super();
         addComponent(new TransformComponent(700, 700));

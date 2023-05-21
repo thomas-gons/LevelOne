@@ -5,18 +5,28 @@ import javafx.geometry.BoundingBox;
 import suchagame.ecs.component.*;
 import suchagame.ecs.component.AnimationComponent.ACTION;
 import suchagame.ui.Game;
-import suchagame.utils.Vector2f;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Base class for all mobs.
+ */
 public class Mob extends Entity {
+
+    // spawn areas for mobs
     private static final Map<String, BoundingBox> spawnAreas = initSpawnAreas();
-    private final Vector2f spawnOrigin;
+
+    // cool down between attacks
+    private long lastAttack = System.currentTimeMillis();
+
+    /**
+     * Constructs a Mob object with all the necessary components.
+     * hard coded for now
+     */
     public Mob() {
         super();
         BoundingBox spawnArea = spawnAreas.get("all"); // (Math.random() > 0.5f) ? "northeast" : "southeast");
-        this.spawnOrigin = new Vector2f((float) spawnArea.getCenterX(), (float) spawnArea.getCenterY());
         this.addComponent(new TransformComponent(spawnArea));
         this.addComponent(new GraphicComponent("slime.png"));
 
@@ -33,9 +43,9 @@ public class Mob extends Entity {
         this.addComponent(new StatsComponent(new HashMap<>(Map.of(
                 "hp_max", 100f,
                 "mp_max", 100f,
-                "atk", 9f,
+                "atk", 2f,
                 "def", 10f,
-                "spd", 0f
+                "spd", 0.7f
             )), new HashMap<>(Map.of(
                 "hp", new SimpleFloatProperty(100f),
                 "mp", new SimpleFloatProperty(100f)
@@ -48,6 +58,10 @@ public class Mob extends Entity {
         ));
     }
 
+    /**
+     * Initializes the spawn areas for mobs.
+     * @return a map of spawn areas
+     */
     private static Map<String, BoundingBox> initSpawnAreas() {
         return new HashMap<>(Map.of(
                 "northeast",
@@ -59,7 +73,11 @@ public class Mob extends Entity {
         ));
     }
 
-    public Vector2f getSpawnOrigin() {
-        return spawnOrigin;
+    public long getLastAttack() {
+        return lastAttack;
+    }
+
+    public void setLastAttack(long lastAttack) {
+        this.lastAttack = lastAttack;
     }
 }

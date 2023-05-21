@@ -4,15 +4,21 @@ package suchagame.ecs.component;
 import javafx.scene.image.Image;
 import suchagame.ui.Game;
 import suchagame.utils.Utils;
-import suchagame.utils.Vector2f;
 
+/**
+ * Component for base graphic (can be extended for animation @see AnimationComponent).
+ */
 public class GraphicComponent extends Component {
     private final Image sprite;
     private int width, height;
     private int[] origin;
 
-    public GraphicComponent(String spritePath) {
-        this.sprite = new Image(Utils.getPathResource(Game.class, "images/" + spritePath));
+    /**
+     * Constructs a GraphicComponent object.
+     * @param spriteFileName name of the sprite file (must be in src/main/java/suchagame/images).
+     */
+    public GraphicComponent(String spriteFileName) {
+        this.sprite = new Image(Utils.getPathResource(Game.class, "images/" + spriteFileName));
         this.width = (int) sprite.getWidth();
         this.height = (int) sprite.getHeight();
         this.origin = new int[]{0, 0};

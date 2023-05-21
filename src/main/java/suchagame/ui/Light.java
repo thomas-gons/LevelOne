@@ -9,9 +9,11 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import suchagame.ecs.component.GraphicComponent;
 import suchagame.ecs.component.TransformComponent;
-import suchagame.ecs.entity.Player;
 import suchagame.utils.Vector2f;
 
+/**
+ * Class that handles the light effect.
+ */
 public class Light {
     private static final int shimmeringRadius = 7;
     private static final int shimmeringDelta = 80;
@@ -22,6 +24,11 @@ public class Light {
     public static int defaultRadius = 350;
     private static int radius = defaultRadius;
     private static long lastTimeShimmering = System.currentTimeMillis();
+
+    /**
+     * Method that renders the light effect with a radial gradient and a blend effect.
+     * Shimmering effect is done by changing the radius of the gradient in a random range.
+     */
     public static void shimmeringLight() {
         if (System.currentTimeMillis() -  lastTimeShimmering > shimmeringDelta) {
             radius = defaultRadius + (int) (Math.random() * shimmeringRadius - shimmeringRadius / 2);
@@ -29,6 +36,8 @@ public class Light {
         }
         Vector2f virtualPosition = Game.em.getPlayer().getComponent(TransformComponent.class).getVirtualPosition();
         GraphicComponent graphicComponent = Game.em.getPlayer().getComponent(GraphicComponent.class);
+
+        // radial gradient around the player with a blend effect
         RadialGradient gradient = new RadialGradient(
                 0,
                 0,

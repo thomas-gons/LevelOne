@@ -9,7 +9,17 @@ import suchagame.ui.Game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Base class for the player.
+ */
 public class Player extends Entity {
+
+    private static String deathCause;
+
+    /**
+     * Constructs a Player object with all the necessary components.
+     * hard coded for now
+     */
     public Player() {
         super();
         this.addComponent(new TransformComponent(700, 550));
@@ -34,13 +44,13 @@ public class Player extends Entity {
 
         this.addComponent(new StatsComponent(
                 new HashMap<>(Map.of(
-                    "hp_max", 1000000f,
+                    "hp_max", 100f,
                     "mp_max", 100f,
-                    "atk", 5f,
+                    "atk", 0f,
                     "def", 10f,
                     "spd", 2f
                 )), new HashMap<>(Map.of(
-                    "hp", new SimpleFloatProperty(1000000f),
+                    "hp", new SimpleFloatProperty(100f),
                     "mp", new SimpleFloatProperty(100f)
                 ))
         ));
@@ -58,5 +68,13 @@ public class Player extends Entity {
                 Item.ItemType.CONSUMABLE, Game.em.getItem("heal_potion")
             )))
         );
+    }
+
+    public static String getDeathCause() {
+        return deathCause;
+    }
+
+    public static void setDeathCause(String deathCause) {
+        Player.deathCause = deathCause;
     }
 }

@@ -6,6 +6,9 @@ import javafx.util.Duration;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * The game loop.
+ */
 public class GameLoop {
     Timeline gameLoop;
     static final int framerate = 60;
@@ -16,6 +19,9 @@ public class GameLoop {
     static float fps;
     private int frameCount = 0;
 
+    /**
+     * Creates the game loop.
+     */
     public GameLoop() {
         AtomicLong currentTime = new AtomicLong();
         AtomicLong lastTime = new AtomicLong();
@@ -29,6 +35,7 @@ public class GameLoop {
             Game.sm.update();
             frameCount++;
 
+            // calculate average fps every sample period (e.g. 16 frames)
             if (frameCount % sampleFrameSize == 0) {
                 currentTime.set(System.currentTimeMillis());
                 long timeElapsed = currentTime.get() - lastTime.get();
@@ -38,5 +45,12 @@ public class GameLoop {
         }));
         this.gameLoop.setCycleCount(Timeline.INDEFINITE);
         this.gameLoop.play();
+    }
+
+    /**
+     * Stops the game loop.
+     */
+    public void stop() {
+        this.gameLoop.stop();
     }
 }
