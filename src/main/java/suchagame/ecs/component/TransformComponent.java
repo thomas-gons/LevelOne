@@ -2,6 +2,7 @@ package suchagame.ecs.component;
 
 
 import javafx.geometry.BoundingBox;
+import suchagame.ecs.entity.Mob;
 import suchagame.ui.Game;
 import suchagame.utils.Vector2f;
 
@@ -10,6 +11,7 @@ import suchagame.utils.Vector2f;
  */
 public class TransformComponent extends Component {
     private Vector2f position;
+    private final Vector2f spawnOrigin;
 
     // virtual position is used for rendering
     private final Vector2f virtualPosition = new Vector2f(0f, 0f);
@@ -19,7 +21,9 @@ public class TransformComponent extends Component {
      * @param position initial position.
      */
     public TransformComponent(Vector2f position) {
-        this.position = position;
+        this.spawnOrigin = position;
+        // deep copy
+        this.position = new Vector2f(position.getX(), position.getY());
     }
 
     /**
@@ -29,19 +33,19 @@ public class TransformComponent extends Component {
      */
     public TransformComponent(float x, float y) {
         this.position = new Vector2f(x, y);
+        this.spawnOrigin = new Vector2f(x, y);
     }
 
     /**
-     * Creates a new TransformComponent based on a given area.
-     * @param area area in which the position will be randomly generated.
+     * Creates a new TransformComponent based on a given position.
+     * @param eventualSpawnAreas possible spawn areas.
      */
-    public TransformComponent(BoundingBox area) {
+    public TransformComponent(String[] eventualSpawnAreas) {
+        BoundingBox area = Mob.getRandomSpawnArea(eventualSpawnAreas);
+        this.spawnOrigin = new Vector2f((float) area.getCenterX(), (float) area.getCenterY());
         LayersComponent layersComponent = Game.em.getMap().getComponent(LayersComponent.class);
 
-        /*
-         * Generate a random position in the given area.
-         * If the position is not walkable, generate a new one => rejection sampling.
-         */
+        // rejection sampling
         Vector2f testPosition = new Vector2f(0f, 0f);
         do {
             testPosition.setX((float) (Math.random() * area.getWidth() + area.getMinX()));
@@ -69,6 +73,10 @@ public class TransformComponent extends Component {
 
     public Vector2f getVirtualPosition() {
         return this.virtualPosition;
+    }
+
+    public Vector2f getSpawnOrigin() {
+        return this.spawnOrigin;
     }
 
 }

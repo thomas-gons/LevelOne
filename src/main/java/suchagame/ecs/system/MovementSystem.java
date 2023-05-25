@@ -1,7 +1,6 @@
 package suchagame.ecs.system;
 
 import javafx.scene.input.KeyCode;
-import suchagame.ecs.component.InputComponent;
 import suchagame.ecs.component.PhysicComponent;
 import suchagame.ecs.component.StatsComponent;
 import suchagame.ecs.component.TransformComponent;
@@ -38,15 +37,14 @@ public class MovementSystem extends System {
      */
     public static void updatePlayer(Player player) {
         TransformComponent transformComponent = player.getComponent(TransformComponent.class);
-        InputComponent inputComponent = player.getComponent(InputComponent.class);
         PhysicComponent physicComponent = player.getComponent(PhysicComponent.class);
         float speed = player.getComponent(StatsComponent.class).getStat("spd");
 
         float dx = 0, dy = 0;
-        if (inputComponent.keyDown.get(KeyCode.Z)) dy -= 1;
-        if (inputComponent.keyDown.get(KeyCode.D)) dx += 1;
-        if (inputComponent.keyDown.get(KeyCode.S)) dy += 1;
-        if (inputComponent.keyDown.get(KeyCode.Q)) dx -= 1;
+        if (Game.sm.get(InputSystem.class).isKeyDown(KeyCode.Z)) dy -= 1;
+        if (Game.sm.get(InputSystem.class).isKeyDown(KeyCode.D)) dx += 1;
+        if (Game.sm.get(InputSystem.class).isKeyDown(KeyCode.S)) dy += 1;
+        if (Game.sm.get(InputSystem.class).isKeyDown(KeyCode.Q)) dx -= 1;
 
         // Normalize the vector if it is diagonal
         if (dx != 0 && dy != 0) {

@@ -1,7 +1,8 @@
 module suchagame.suchagame {
     requires javafx.controls;
     requires javafx.fxml;
-    requires org.apache.commons.lang3;
+    requires org.yaml.snakeyaml;
+    requires annotations;
 
 
     exports suchagame.ui;

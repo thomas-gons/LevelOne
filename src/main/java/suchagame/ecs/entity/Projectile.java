@@ -51,15 +51,15 @@ public class Projectile extends Entity {
         ));
 
 
-        addComponent(new StatsComponent(
-                new HashMap<>(Map.of(
-                    "atk", projectileType.atk,
-                    "spd", projectileType.spd
-                )),
-                new HashMap<>(Map.of(
-                    "hp", new SimpleFloatProperty(projectileType.hp)
-                ))
-        ));
+//        addComponent(new StatsComponent(
+//                new HashMap<>(Map.of(
+//                    "atk", projectileType.atk,
+//                    "spd", projectileType.spd
+//                )),
+//                new HashMap<>(Map.of(
+//                    "hp", new SimpleFloatProperty(projectileType.hp)
+//                ))
+//        ));
     }
 
     public int getManaCost() {

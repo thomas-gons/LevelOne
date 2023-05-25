@@ -1,0 +1,53 @@
+---
+player:
+    metadata:
+        handItems:
+            SPELL: fireball
+            CONSUMABLE: heal_potion
+
+    Transform:
+        x: 700.0
+        y: 550.0
+
+    Graphic:
+        sprite: flame.png
+
+    Animation:
+        framerate: 12
+        initAction: idle
+        initFrame: 0
+        framesCountPerAction:
+            - 8
+            - 8
+
+    Physic:
+        width: 25
+        height: 35
+        offsetX: -12
+        offsetY: -8
+        mass: 100.0
+
+    Stats:
+        baseStats:
+            hp_max: 100.0
+            mp_max: 100.0
+            atk: 10.0
+            def: 10.0
+            spd: 2.0
+
+        baseObservableStats:
+            hp: 100.0
+            mp: 100.0
+
+    Inventory:
+        inventory:
+            slime_drop: 100
+            fireball: 1
+            heal_potion: 3
+            mana_potion: 2
+
+
+    Flag:
+        flags:
+            noClip: false
+            invincibility: false

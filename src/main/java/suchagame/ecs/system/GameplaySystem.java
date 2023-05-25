@@ -34,7 +34,7 @@ public class GameplaySystem extends System {
             return;
         }
         // get the current hand item spell
-        String tag = Game.em.getPlayer().getComponent(GameplayComponent.class).getHandItem(Item.ItemType.SPELL).getTag();
+        String tag = Game.em.getPlayer().getHandItem(Item.ItemType.SPELL).getTag();
         StatsComponent statsComponent = Game.em.getPlayer().getComponent(StatsComponent.class);
 
         // check if the player has enough mana to cast the spell
@@ -50,7 +50,7 @@ public class GameplaySystem extends System {
 
             // remove the mana cost from the player's mana
             statsComponent.alterObservableStat("mp", -projectile.getManaCost());
-            Game.em.addEntity(projectile);
+//            Game.em.addEntity(projectile);
 
             // reset the player's animation
             animationComponent.setCurrentAction(AnimationComponent.ACTION.IDLE);
@@ -70,10 +70,9 @@ public class GameplaySystem extends System {
      * @param type The type of the item to switch.
      */
     public void switchHandItem(Item.ItemType type) {
-        GameplayComponent gameplayComponent = Game.em.getPlayer().getComponent(GameplayComponent.class);
         InventoryComponent inventoryComponent = Game.em.getPlayer().getComponent(InventoryComponent.class);
 
-        Item handItem = gameplayComponent.getHandItems().get(type);
+        Item handItem = Game.em.getPlayer().getHandItem(type);
 
         List<Item> inventoryItems = new ArrayList<>(inventoryComponent.getInventory().keySet());
 
@@ -94,8 +93,7 @@ public class GameplaySystem extends System {
      * @param item The item to set.
      */
     public void setHandItem(Item item) {
-        GameplayComponent characterComponent = Game.em.getPlayer().getComponent(GameplayComponent.class);
-        characterComponent.getHandItems().put(item.getType(), item);
+        Game.em.getPlayer().setHandItem(item);
     }
 
     /**
@@ -103,18 +101,18 @@ public class GameplaySystem extends System {
      * @return the amount of the current consumable item
      */
     public int getAmountOfCurrentConsumable() {
-        InventoryComponent inventory = Game.em.getPlayer().getComponent(InventoryComponent.class);
-        GameplayComponent character = Game.em.getPlayer().getComponent(GameplayComponent.class);
-        return inventory.getItemAmount(character.getHandItem(Item.ItemType.CONSUMABLE).getTag());
+        Player player = Game.em.getPlayer();
+        InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+        return inventory.getItemAmount(player.getHandItem(Item.ItemType.CONSUMABLE).getTag());
     }
 
     /**
      * Uses the current consumable item.
      */
     public void useCurrentConsumable() {
-        InventoryComponent inventory = Game.em.getPlayer().getComponent(InventoryComponent.class);
-        GameplayComponent character = Game.em.getPlayer().getComponent(GameplayComponent.class);
-        Item item = character.getHandItem(Item.ItemType.CONSUMABLE);
+        Player player = Game.em.getPlayer();
+        InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+        Item item = player.getHandItem(Item.ItemType.CONSUMABLE);
         // check if the player has the item in his inventory
         if (inventory.getItemAmount(item.getTag()) > 0) {
             StatsSystem.useConsumable(Game.em.getPlayer(), item);

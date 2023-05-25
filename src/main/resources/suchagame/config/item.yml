@@ -1,0 +1,48 @@
+---
+slime_drop:
+  metadata:
+    tag: slime_drop
+    type: MISC
+    slimeDropValue: 1
+
+fireball:
+  metadata:
+    tag: fireball
+    type: SPELL
+    slimeDropValue: 250
+
+heal_potion:
+  metadata:
+    tag: heal_potion
+    type: CONSUMABLE
+    slimeDropValue: 100
+
+  Stats:
+    baseStats:
+      hp: 25.0
+
+    observableStats: {}
+
+mana_potion:
+  metadata:
+    tag: mana_potion
+    type: CONSUMABLE
+    slimeDropValue: 10
+
+  Stats:
+    baseStats:
+      mp: 25.0
+
+    observableStats: {}
+
+speed_potion:
+  metadata:
+    tag: speed_potion
+    type: CONSUMABLE
+    slimeDropValue: 10
+
+  Stats:
+    baseStats:
+      spd: 10.0
+
+    observableStats: {}

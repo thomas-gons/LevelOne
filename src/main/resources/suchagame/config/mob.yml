@@ -1,0 +1,48 @@
+---
+slime:
+  metadata:
+    tag: "slime"
+
+  Transform:
+    spawn:
+    - northeast
+    - southeast
+
+  Graphic:
+    sprite: slime.png
+
+  Animation:
+    framerate: 14
+    initAction: idle
+    initFrame: random
+    framesCountPerAction:
+    - 4
+    - 18
+    - 11
+
+  Physic:
+    width: 22
+    height: 13
+    offsetX: -10
+    offsetY: 7
+    mass: 1.0
+
+  Stats:
+    baseStats:
+      hp_max: 100.0
+      mp_max: 100.0
+      atk: 9.0
+      def: 10.0
+      spd: 1.0
+
+    baseObservableStats:
+      hp: 100.0
+      mp: 100.0
+
+  Inventory:
+    items:
+      slime_drop: 20
+
+  Flag:
+      flags:
+        noClip: false

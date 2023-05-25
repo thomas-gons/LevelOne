@@ -18,21 +18,12 @@ public class Item extends Entity {
      * @param tag the tag of the item
      * @param type the type of the item
      * @param slimeDropValue the amount of slime that the item drops when destroyed
-     * @param stats the stats of the item to build a stats component with
      */
-    @SafeVarargs
-    public Item(String tag, ItemType type, int slimeDropValue, Map.Entry<String, Float>... stats) {
+    public Item(String tag, ItemType type, int slimeDropValue) {
         super();
         this.tag = tag;
         this.type = type;
         this.slimeDropValue = slimeDropValue;
-        // items cannot have observers
-        addComponent(new StatsComponent(
-                new HashMap<>(
-                        Map.ofEntries(stats)
-                ),
-                null
-        ));
     }
 
     public String getTag() {

@@ -18,6 +18,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import suchagame.ecs.EntityManager;
 import suchagame.ecs.SystemManager;
+import suchagame.ecs.component.FlagComponent;
+import suchagame.ecs.entity.Entity;
+import suchagame.ecs.entity.Mob;
 import suchagame.ecs.entity.Player;
 
 /**
@@ -45,6 +48,7 @@ public class Game extends Application {
     public static Debug debug;
 
     private static boolean isGameRunning;
+    private static boolean godMode = false;
 
     /**
      * Main method of the game. Launches the game.
@@ -93,6 +97,7 @@ public class Game extends Application {
         gameLoop = new GameLoop();
         isGameRunning = true;
         debug = new Debug((AnchorPane) root.lookup("#game_debug"));
+        initMods();
 
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -158,4 +163,28 @@ public class Game extends Application {
         });
     }
 
+
+    public void initMods() {
+        // toggle god mode on F5
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.F5) {
+                godMode = !godMode;
+                Game.em.getPlayer().getComponent(FlagComponent.class).setFlags(godMode);
+            }
+        });
+        // toggle hardcore mode on F6
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.F6) {
+                for (Entity e : Game.em.getEntities()) {
+                    // check if entity is mob
+                    if (e instanceof Mob) {
+                        e.getComponent(FlagComponent.class).setFlags(true);
+                    } else if (e instanceof Player) {
+                        godMode = false;
+                        e.getComponent(FlagComponent.class).setFlags(godMode);
+                    }
+                }
+            }
+        });
+    }
 }

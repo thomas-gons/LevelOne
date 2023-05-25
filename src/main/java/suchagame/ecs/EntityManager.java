@@ -1,51 +1,42 @@
 package suchagame.ecs;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import suchagame.ecs.component.Component;
 import suchagame.ecs.component.StatsComponent;
 import suchagame.ecs.entity.*;
+
+import java.util.*;
+
 import suchagame.ecs.system.StatsSystem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class EntityManager {
+    private final Model model;
     public List<Entity> entities = new ArrayList<>();
     private int itemsCount;
 
-    public EntityManager() {}
+    public EntityManager() {
+        model = new Model(
+                Item.class,
+                MapEntity.class,
+                Player.class,
+                NPC.class,
+                Mob.class
+        );
+    }
 
     /**
      * Initializes the entities in the game.
      */
     public void initEntities() {
-        int mobCount = 25;
-        addItems();
-        this.addEntity(new MapEntity());
-        this.addEntity(new Player());
-        this.addEntity(new NPC());
-        for (int i = 0; i < mobCount; i++) {
-            this.addEntity(new Mob());
+        addEntity(Item.class, "*");
+        addEntity(MapEntity.class);
+        addEntity(Player.class);
+        addEntity(NPC.class, "blacksmith");
+        for (int i = 0; i < 10; i++) {
+            addEntity(Mob.class, "slime");
         }
-    }
-
-    /**
-     * Adds the predefined items to the entity manager.
-     */
-    private void addItems() {
-        this.addEntity(new Item("slime_drop", Item.ItemType.MISC, 1));
-        this.addEntity(new Item("fireball", Item.ItemType.SPELL, 250));
-        this.addEntity(new Item("heal_potion", Item.ItemType.CONSUMABLE, 50,
-                Map.entry("hp", 25f)
-        ));
-        this.addEntity(new Item("mana_potion", Item.ItemType.CONSUMABLE, 10,
-                Map.entry("mp", 25f)
-        ));
-        this.addEntity(new Item("speed_potion", Item.ItemType.CONSUMABLE, 10,
-                Map.entry("spd", 1f)
-        ));
-        itemsCount = Entity.entitiesCount;
     }
 
     /**
@@ -106,15 +97,30 @@ public class EntityManager {
 
     /**
      * Adds an entity to the entity manager. If the entity has a StatsComponent, it adds an observer to it.
-     *
-     * @param entity the entity to add
      */
-    public void addEntity(Entity entity) {
+    public void addEntity(Class<? extends Entity> entityClass) {
+        addEntity(entityClass, null);
+    }
+
+    public void addEntity(Class<? extends Entity> entityClass, @Nullable String tag) {
+        if (tag != null && tag.equals("*")) {
+            for (String newTag: model.getTags(entityClass)) {
+                addEntity(entityClass, newTag);
+            }
+            return;
+        }
+
+        Entity entity = model.loadModel(entityClass, tag);
         this.entities.add(entity);
         if (entity.hasComponent(StatsComponent.class)) {
             StatsSystem.addObserver(entity);
         }
+
+        if (entity instanceof Item) {
+            itemsCount++;
+        }
     }
+
 
     /**
      * Removes an entity from the entity manager.
@@ -162,6 +168,10 @@ public class EntityManager {
         return null;
     }
 
+    public List<Entity> getEntities() {
+        return entities;
+    }
+
     /**
      * Removes all entities from the entity manager.
      */
@@ -169,4 +179,5 @@ public class EntityManager {
         this.entities.clear();
     }
 }
+
 

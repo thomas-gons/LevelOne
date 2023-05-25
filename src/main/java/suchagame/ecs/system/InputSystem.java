@@ -3,14 +3,34 @@ package suchagame.ecs.system;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import suchagame.ecs.component.InputComponent;
 import suchagame.ecs.entity.Item;
 import suchagame.ui.Game;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is responsible for handling user input.
  */
 public class InputSystem extends System {
+
+    Map<KeyCode, Boolean> keyDown = new HashMap<>(Map.of(
+            KeyCode.Z, false,
+            KeyCode.Q, false,
+            KeyCode.S, false,
+            KeyCode.D, false
+    ));
+
+    Set<KeyCode> keyPressed = Set.of(
+            KeyCode.AMPERSAND,
+            KeyCode.DEAD_ACUTE,
+            KeyCode.QUOTEDBL,
+            KeyCode.B,
+            KeyCode.E,
+            KeyCode.A
+    );
+
 
     /**
      * Constructs a new InputSystem.
@@ -31,11 +51,10 @@ public class InputSystem extends System {
      * @param scene the scene to listen to
      */
     private void initKeyDownEvent(Scene scene) {
-        InputComponent inputComponent = Game.em.getPlayer().getComponent(InputComponent.class);
         // toggle corresponding value to simulate key down
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> inputComponent.keyDown.put(event.getCode(), true));
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> keyDown.put(event.getCode(), true));
 
-        scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> inputComponent.keyDown.put(event.getCode(), false));
+        scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> keyDown.put(event.getCode(), false));
     }
 
     /**
@@ -44,9 +63,8 @@ public class InputSystem extends System {
      * @param scene the scene to listen to
      */
     private void initKeyPressedEvent(Scene scene) {
-        InputComponent inputComponent = Game.em.getPlayer().getComponent(InputComponent.class);
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (inputComponent.keyPressed.contains(event.getCode())) {
+            if (keyPressed.contains(event.getCode())) {
                 switch (event.getCode()) {
                     // switch hand artefact
                     case AMPERSAND -> Game.sm.get(GameplaySystem.class).switchHandItem(Item.ItemType.ARTEFACT);
@@ -83,5 +101,9 @@ public class InputSystem extends System {
         });
         Game.scene.removeEventHandler(KeyEvent.KEY_RELEASED, event -> {
         });
+    }
+
+    public boolean isKeyDown(KeyCode key) {
+        return keyDown.get(key);
     }
 }

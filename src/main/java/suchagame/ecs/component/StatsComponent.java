@@ -2,6 +2,7 @@ package suchagame.ecs.component;
 
 import javafx.beans.property.SimpleFloatProperty;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,10 +23,14 @@ public class StatsComponent extends Component {
      * @param baseObservableStats the initial observable stats to set for the component
      */
     public StatsComponent(Map<String, Float> baseStats,
-                          Map<String, SimpleFloatProperty> baseObservableStats) {
+                          Map<String, Float> baseObservableStats) {
 
         this.stats = baseStats;
-        this.observableStats = baseObservableStats;
+        this.observableStats = new HashMap<>();
+        // convert the base observable stats to simple float properties
+        for (Map.Entry<String, Float> entry : baseObservableStats.entrySet())
+            observableStats.put(entry.getKey(), new SimpleFloatProperty(entry.getValue()));
+
     }
 
     public Map<String, Float> getStats() {

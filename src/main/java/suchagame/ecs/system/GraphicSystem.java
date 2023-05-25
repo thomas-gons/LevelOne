@@ -4,7 +4,6 @@ import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import suchagame.ecs.component.GraphicComponent;
-import suchagame.ecs.component.InputComponent;
 import suchagame.ecs.component.PhysicComponent;
 import suchagame.ecs.component.TransformComponent;
 import suchagame.ecs.entity.Entity;
@@ -68,7 +67,7 @@ public class GraphicSystem extends System {
         BoundingBox viewport = Camera.viewport;
 
         // player entity
-        if (entity.hasComponent(InputComponent.class)) {
+        if (entity.getClass().getSimpleName().equals("Player")) {
             /*
                 If the entity is in the free space, we center it
                 Otherwise, we render it at its position

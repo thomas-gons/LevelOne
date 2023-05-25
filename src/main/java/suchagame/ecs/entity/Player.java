@@ -1,11 +1,5 @@
 package suchagame.ecs.entity;
 
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.scene.input.KeyCode;
-import suchagame.ecs.component.*;
-import suchagame.ecs.component.AnimationComponent.ACTION;
-import suchagame.ui.Game;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,60 +8,41 @@ import java.util.Map;
  */
 public class Player extends Entity {
 
+    /** only one item type can be in hand at a time.
+     * @see Item.ItemType
+    */
+    private final Map<Item.ItemType, Item> handItems = new HashMap<>();
     private static String deathCause;
 
-    /**
-     * Constructs a Player object with all the necessary components.
-     * hard coded for now
-     */
-    public Player() {
+    public Player(Map<Item.ItemType, String> handItems) {
         super();
-        this.addComponent(new TransformComponent(700, 550));
-        this.addComponent(new InputComponent(
-                new KeyCode[]{KeyCode.Z, KeyCode.Q, KeyCode.S, KeyCode.D},
-                new KeyCode[]{
-                        KeyCode.AMPERSAND, KeyCode.DEAD_ACUTE, KeyCode.QUOTEDBL,
-                        KeyCode.B, KeyCode.E, KeyCode.A
-                }
-        ));
+        initHandItems();
+        for (Map.Entry<Item.ItemType, String> entry : handItems.entrySet()) {
+            Item item = new Item(entry.getValue(), entry.getKey(), 0);
+            this.handItems.put(entry.getKey(), item);
+        }
+    }
 
-        this.addComponent(new GraphicComponent("flame.png"));
-        this.addComponent(new AnimationComponent(
-                this.getComponent(GraphicComponent.class),
-                12, ACTION.IDLE, 0,
-                new int[]{8, 8}
-        ));
+    /**
+     * Initializes the hand items map with null values for each item type
+     * because some item types may not be present in the map.
+     */
+    private void initHandItems() {
+        for (Item.ItemType type : Item.ItemType.values()) {
+            this.handItems.put(type, null);
+        }
+    }
 
-        this.addComponent(new PhysicComponent(
-                25, 35, -12, -8,
-                100));
+     public Map<Item.ItemType, Item> getHandItems() {
+        return handItems;
+    }
 
-        this.addComponent(new StatsComponent(
-                new HashMap<>(Map.of(
-                    "hp_max", 100f,
-                    "mp_max", 100f,
-                    "atk", 0f,
-                    "def", 10f,
-                    "spd", 2f
-                )), new HashMap<>(Map.of(
-                    "hp", new SimpleFloatProperty(100f),
-                    "mp", new SimpleFloatProperty(100f)
-                ))
-        ));
+    public Item getHandItem(Item.ItemType type) {
+        return handItems.get(type);
+    }
 
-        this.addComponent(new InventoryComponent(new HashMap<>(Map.of(
-                Game.em.getItem("slime_drop"), 100,
-                Game.em.getItem("fireball"), 1,
-                Game.em.getItem("heal_potion"), 3,
-                Game.em.getItem("mana_potion"), 2
-            ))
-        ));
-
-        this.addComponent(new GameplayComponent(new HashMap<>(Map.of(
-                Item.ItemType.SPELL, Game.em.getItem("fireball"),
-                Item.ItemType.CONSUMABLE, Game.em.getItem("heal_potion")
-            )))
-        );
+    public void setHandItem(Item item) {
+        handItems.put(item.getType(), item);
     }
 
     public static String getDeathCause() {

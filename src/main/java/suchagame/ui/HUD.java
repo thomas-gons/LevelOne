@@ -9,7 +9,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.util.Pair;
-import suchagame.ecs.component.GameplayComponent;
 import suchagame.ecs.component.InventoryComponent;
 import suchagame.ecs.component.StatsComponent;
 import suchagame.ecs.entity.Item;
@@ -108,7 +107,7 @@ public class HUD {
         emptySlotViews[2].setLayoutX(emptySlot.getWidth() + offset);
         emptySlotViews[2].setLayoutY(Game.height - 2 * emptySlot.getHeight() - 2.5 * offset);
 
-        Map< Item.ItemType, Item> handItems = Game.em.getPlayer().getComponent(GameplayComponent.class).getHandItems();
+        Map< Item.ItemType, Item> handItems = Game.em.getPlayer().getHandItems();
         for (Map.Entry<Item.ItemType, Item> entry : handItems.entrySet()) {
             Item item = entry.getValue();
             if (item == null) continue;

@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.util.Duration;
+import suchagame.ecs.component.FlagComponent;
 import suchagame.ecs.component.StatsComponent;
 import suchagame.ecs.entity.Entity;
 import suchagame.ecs.entity.Item;
@@ -72,6 +73,11 @@ public class StatsSystem extends System {
         if (source instanceof Player && target instanceof Projectile ||
                 source instanceof Projectile && target instanceof Player)
             return;
+
+        FlagComponent targetFlag = target.getComponent(FlagComponent.class);
+        if (targetFlag != null && targetFlag.getFlag("invincibility"))
+            return;
+
         float damage = source.getComponent(StatsComponent.class).getStat("atk");
         target.getComponent(StatsComponent.class).alterObservableStat("hp", -damage);
     }

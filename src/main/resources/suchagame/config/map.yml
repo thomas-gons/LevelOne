@@ -1,0 +1,9 @@
+{
+    "mapEntity": {
+        "metadata": {
+            "layersCount": 2,
+            "defaultTileSize": 32
+        },
+        "Layers": {}
+    }
+}

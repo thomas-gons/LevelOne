@@ -1,6 +1,5 @@
 package suchagame.ecs.component;
 
-
 import java.util.Arrays;
 
 /**
@@ -11,8 +10,29 @@ public class AnimationComponent extends Component {
     private ACTION currentAction;
     private int currentFrame;
     private final int[] framesCountPerRow;
+
     private final int actionCount;
     private long lastUpdate = java.lang.System.currentTimeMillis();
+
+    /**
+     * Constructs an AnimationComponent object.
+     *
+     * @param graphicComponent     the associated graphic component for the animation
+     * @param framerate            the frame rate of the animations in frames per second
+     * @param framesCountPerRow    an array specifying the number of frames per row for each action
+     */
+    private AnimationComponent(
+            GraphicComponent graphicComponent, int framerate,
+            int[] framesCountPerRow)
+    {
+        this.framerate = framerate;
+        this.framesCountPerRow = framesCountPerRow;
+        this.actionCount = framesCountPerRow.length - 1;
+
+         // max frame count per row is used because some actions have more frames than others
+        graphicComponent.setWidth(graphicComponent.getWidth() / Arrays.stream(framesCountPerRow).max().getAsInt());
+        graphicComponent.setHeight(graphicComponent.getHeight() / framesCountPerRow.length);
+    }
 
     /**
      * Constructs an AnimationComponent object.
@@ -23,27 +43,54 @@ public class AnimationComponent extends Component {
      * @param initFrame            the initial frame of the animation in the sprite sheet
      * @param framesCountPerRow    an array specifying the number of frames per row for each action
      */
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Dependency(GraphicComponent.class)
     public AnimationComponent(
             GraphicComponent graphicComponent, int framerate,
             ACTION initAction, int initFrame,
             int[] framesCountPerRow
     ) {
-        this.framerate = framerate;
+        this(graphicComponent, framerate, framesCountPerRow);
         this.currentAction = initAction;
-        this.currentFrame = (initFrame != -1) ?
-                initFrame : (int) (Math.random() * framesCountPerRow[initAction.ordinal()]);
+        this.currentFrame = initFrame;
 
-        this.framesCountPerRow = framesCountPerRow;
-        this.actionCount = framesCountPerRow.length - 1;
-        // max frame count per row is used because some actions have more frames than others
-
-        graphicComponent.setWidth(graphicComponent.getWidth() / Arrays.stream(framesCountPerRow).max().getAsInt());
-        graphicComponent.setHeight(graphicComponent.getHeight() / framesCountPerRow.length);
-        // initialize the origin of the graphic component based on the initial frame and action
+         // initialize the origin of the graphic component based on the initial frame and action
         graphicComponent.setOrigin(new int[]{
                 graphicComponent.getWidth() * initFrame,
                 graphicComponent.getHeight() * getActionRow(initAction)
+        });
+    }
+
+    /**
+     * Constructs an AnimationComponent object.
+     *
+     * @param graphicComponent     the associated graphic component for the animation
+     * @param framerate            the frame rate of the animations in frames per second
+     * @param specialAction        the special action of the animation
+     * @param specialFrame         the special frame of the animation in the sprite sheet
+     * @param framesCountPerRow    an array specifying the number of frames per row for each action
+     */
+    @Dependency(GraphicComponent.class)
+    public AnimationComponent(
+            GraphicComponent graphicComponent, int framerate,
+            String specialAction, String specialFrame,
+            int[] framesCountPerRow)
+    {
+        this(graphicComponent, framerate, framesCountPerRow);
+
+        if (specialAction.equals("random")) {
+            this.currentAction = ACTION.values()[(int) (Math.random() * framesCountPerRow.length)];
+        } else {
+            this.currentAction = ACTION.valueOf(specialAction.toUpperCase());
+        }
+        if (specialFrame.equals("random")) {
+            assert currentAction != null;
+            this.currentFrame = (int) (Math.random() * framesCountPerRow[currentAction.ordinal()]);
+        }
+
+        // initialize the origin of the graphic component based on the initial frame and action
+        graphicComponent.setOrigin(new int[]{
+                graphicComponent.getWidth() * currentFrame,
+                graphicComponent.getHeight() * getActionRow(currentAction)
         });
     }
 

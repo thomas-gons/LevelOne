@@ -3,6 +3,7 @@ package suchagame.ecs.component;
 import suchagame.ecs.entity.Item;
 import suchagame.ui.Game;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,9 +17,13 @@ public class InventoryComponent extends Component {
      * Constructs an InventoryComponent object with the specified inventory.
      * @param inventory the initial inventory to set for the component
      */
-    public InventoryComponent(Map<Item, Integer> inventory) {
+    public InventoryComponent(Map<String, Integer> inventory) {
         super();
-        this.inventory = inventory;
+        this.inventory = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            Item item = Game.em.getItem(entry.getKey());
+            this.inventory.put(item, entry.getValue());
+        }
     }
 
     public Map<Item, Integer> getInventory() {
