@@ -2,6 +2,8 @@ package suchagame.ecs.component;
 
 
 import javafx.scene.image.Image;
+import suchagame.ecs.entity.Entity;
+import suchagame.ecs.entity.Projectile;
 import suchagame.ui.Game;
 import suchagame.utils.Utils;
 
@@ -22,6 +24,24 @@ public class GraphicComponent extends Component {
         this.width = (int) sprite.getWidth();
         this.height = (int) sprite.getHeight();
         this.origin = new int[]{0, 0};
+    }
+
+    @Dynamic
+    public GraphicComponent(String spriteFileName, Entity entity) {
+        if (entity instanceof Projectile) {
+            Projectile.SIDE side = ((Projectile) entity).getOrientation();
+            if (spriteFileName.contains(".png")) {
+                spriteFileName = spriteFileName.substring(0, spriteFileName.length() - 4);
+            }
+            String spritePath = "images/" + spriteFileName + "_" + side.toString().toLowerCase() + ".png";
+            this.sprite = new Image(Utils.getPathResource(Game.class, spritePath));
+            this.width = (int) sprite.getWidth();
+            this.height = (int) sprite.getHeight();
+            this.origin = new int[]{0, 0};
+        }
+        else {
+            throw new IllegalArgumentException("Entity must has dynamic sprite");
+        }
     }
 
     public Image getSprite() {

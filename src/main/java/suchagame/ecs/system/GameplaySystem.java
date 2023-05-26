@@ -34,23 +34,22 @@ public class GameplaySystem extends System {
             return;
         }
         // get the current hand item spell
-        String tag = Game.em.getPlayer().getHandItem(Item.ItemType.SPELL).getTag();
-        StatsComponent statsComponent = Game.em.getPlayer().getComponent(StatsComponent.class);
+        Player player = Game.em.getPlayer();
+
+        String tag = player.getHandItem(Item.ItemType.SPELL).getTag();
+        StatsComponent statsComponent = player.getComponent(StatsComponent.class);
+        int manaCost = (int) Game.em.getMetaDataInModel(Projectile.class, tag, "manaCost");
 
         // check if the player has enough mana to cast the spell
-        if (statsComponent.getObservableStat("mp") < Projectile.ProjectileType.getManaCost(tag))
+        if (statsComponent.getObservableStat("mp") < manaCost)
             return;
 
         AnimationComponent animationComponent = Game.em.getPlayer().getComponent(AnimationComponent.class);
 
-        // get the player's velocity to cast the spell in the same direction
-        Vector2f playerVelocity = Game.em.getPlayer().getComponent(PhysicComponent.class).getVelocityDeepCopy();
         Runnable r = () -> {
-            Projectile projectile = new Projectile(tag, playerVelocity);
-
             // remove the mana cost from the player's mana
-            statsComponent.alterObservableStat("mp", -projectile.getManaCost());
-//            Game.em.addEntity(projectile);
+            statsComponent.alterObservableStat("mp", -manaCost);
+            Game.em.addEntity(Projectile.class, tag);
 
             // reset the player's animation
             animationComponent.setCurrentAction(AnimationComponent.ACTION.IDLE);

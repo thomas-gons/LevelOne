@@ -142,9 +142,7 @@ public class Camera {
      * @param delta The amount to change the scale by.
      */
     public void alterScale(float delta) {
-        if (Camera.scale + delta < 1f || Camera.scale + delta > 7f)
-            return;
-        Camera.scale += delta;
+        Camera.scale = (delta > 0f) ? Math.min(Camera.scale + delta, 7f) : Math.max(Camera.scale + delta, 1f);
         Camera.relativeWidth = (int) (Game.width / Camera.scale);
         Camera.relativeHeight = (int) (Game.height / Camera.scale);
         Game.freeSpace = new BoundingBox(

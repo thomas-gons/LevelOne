@@ -33,4 +33,15 @@ public class Utils {
                 hitBox.getHeight()
         );
     }
+
+
+    public static Class<?> getPrimitiveType(Class<?> currentType) {
+        if (!currentType.isPrimitive()) {
+            try {
+                Object currentTypePrimitive = currentType.getField("TYPE").get(null);
+                return (Class<?>) currentTypePrimitive;
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {}
+        }
+        return currentType;
+    }
 }

@@ -22,6 +22,7 @@ import suchagame.ecs.component.FlagComponent;
 import suchagame.ecs.entity.Entity;
 import suchagame.ecs.entity.Mob;
 import suchagame.ecs.entity.Player;
+import suchagame.ecs.entity.Projectile;
 
 /**
  * Main class of the game. Initializes the game loop and the game scene.
@@ -48,7 +49,7 @@ public class Game extends Application {
     public static Debug debug;
 
     private static boolean isGameRunning;
-    private static boolean godMode = false;
+    public static GameMode gameMode = GameMode.NORMAL;
 
     /**
      * Main method of the game. Launches the game.
@@ -130,14 +131,13 @@ public class Game extends Application {
         end_game_label.setLayoutY(480);
         end_game.getChildren().add(end_game_label);
 
-        if (end_message.equals("GAME OVER")) {
-            Label death_cause_label = new Label(Player.getDeathCause());
-            death_cause_label.setFont(hud.resizeFont(40));
-            death_cause_label.setStyle("-fx-text-fill: rgba(150, 150, 150 , 1)");
-            death_cause_label.setLayoutX(1920 / 2f - Player.getDeathCause().length() * 8.5);
-            death_cause_label.setLayoutY(580);
-            end_game.getChildren().add(death_cause_label);
-        }
+
+        Label death_cause_label = new Label(Player.getDeathCause());
+        death_cause_label.setFont(hud.resizeFont(40));
+        death_cause_label.setStyle("-fx-text-fill: rgba(150, 150, 150 , 1)");
+        death_cause_label.setLayoutX(1920 / 2f - Player.getDeathCause().length() * 8.5);
+        death_cause_label.setLayoutY(580);
+        end_game.getChildren().add(death_cause_label);
 
 
         Label end_game_quit = new Label("Press ESC to quit");
@@ -168,23 +168,40 @@ public class Game extends Application {
         // toggle god mode on F5
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.F5) {
-                godMode = !godMode;
-                Game.em.getPlayer().getComponent(FlagComponent.class).setFlags(godMode);
+                gameMode = (gameMode != GameMode.GOD) ? GameMode.GOD : GameMode.NORMAL;
+                Game.em.getPlayer().getComponent(FlagComponent.class).setFlags(isGameMode(GameMode.GOD));
+                Game.em.toggleFlagInModel(Projectile.class, "fireball", "noClip");
+                for (Entity e : Game.em.getEntities()) {
+                    // check if entity is mob
+                    if (e instanceof Mob) {
+                        e.getComponent(FlagComponent.class).setFlags(false);
+                    }
+                }
             }
         });
         // toggle hardcore mode on F6
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.F6) {
+                gameMode = (gameMode != GameMode.HARDCORE) ? GameMode.HARDCORE : GameMode.NORMAL;
                 for (Entity e : Game.em.getEntities()) {
                     // check if entity is mob
                     if (e instanceof Mob) {
-                        e.getComponent(FlagComponent.class).setFlags(true);
-                    } else if (e instanceof Player) {
-                        godMode = false;
-                        e.getComponent(FlagComponent.class).setFlags(godMode);
+                        e.getComponent(FlagComponent.class).setFlags(isGameMode(GameMode.HARDCORE));
                     }
+                    Game.em.getPlayer().getComponent(FlagComponent.class).setFlags(isGameMode(GameMode.GOD));
+                    Game.em.toggleFlagInModel(Projectile.class, "fireball", "noClip");
                 }
             }
         });
+    }
+
+    private boolean isGameMode(GameMode gameMode) {
+        return Game.gameMode == gameMode;
+    }
+
+    public enum GameMode {
+        NORMAL,
+        GOD,
+        HARDCORE
     }
 }

@@ -1,0 +1,46 @@
+---
+fireball:
+  metadata:
+    isOriented: true
+    isStatic: false
+    manaCost: 10
+    dynamicComponents:
+      - Transform
+      - Graphic
+
+  Transform:
+    offsetX: 7.0
+    offsetY: 37.0
+
+  Graphic:
+    sprite: fireball.png
+
+  Animation:
+    framerate: 12
+    initAction: idle
+    initFrame: 0
+    framesCountPerAction:
+    - 5
+    - 7
+
+  Physic:
+    width: 17
+    height: 15
+    offsetX: -8
+    offsetY: -6
+    mass: 10.0
+    baseSpeed:
+      - 3.0
+      - 0.0
+
+  Stats:
+    baseStats:
+      atk: 100.0
+      spd: 3.0
+
+    baseObservableStats:
+      hp: 100.0
+
+  Flag:
+    flags:
+      noClip: false

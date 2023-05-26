@@ -2,7 +2,9 @@ package suchagame.ecs.component;
 
 
 import javafx.geometry.BoundingBox;
+import suchagame.ecs.entity.Entity;
 import suchagame.ecs.entity.Mob;
+import suchagame.ecs.entity.Projectile;
 import suchagame.ui.Game;
 import suchagame.utils.Vector2f;
 
@@ -54,6 +56,19 @@ public class TransformComponent extends Component {
 
         this.position = testPosition;
     }
+
+    @Dynamic
+    public TransformComponent(float x, float y, Entity entity) {
+        if (entity instanceof Projectile) {
+            Vector2f playerPosition = Game.em.getPlayer().getComponent(TransformComponent.class).getPosition();
+            position = playerPosition.add(new Vector2f(x, y));
+            spawnOrigin = position;
+        } else {
+            throw new IllegalArgumentException("Entity must has a dynamic position");
+        }
+    }
+
+
 
     public Vector2f getPosition() {
         return this.position;

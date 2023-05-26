@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FlagComponent extends Component {
-    private Map<String, Boolean> flags = new HashMap<>();
+    private final Map<String, Boolean> flags;
 
     public FlagComponent(Map<String, Boolean> flags) {
         super();

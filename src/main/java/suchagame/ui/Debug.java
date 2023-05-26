@@ -43,7 +43,7 @@ public class Debug {
      * Initializes the debug view by creating and positioning the debug labels.
      */
     private void initDebugView() {
-        String[] debugLabels = {"fps", "entities", "scale", "position", "health", "mana"};
+        String[] debugLabels = {"fps", "entities", "scale", "game mode", "position", "health", "mana"};
         for (int i = 0; i < debugLabels.length; i++) {
             Label label = initLabel();
             label.setLayoutX(10);
@@ -97,6 +97,7 @@ public class Debug {
         this.debugLabels.get("position").setText("Player Position: " + Game.em.getPlayer().getComponent(TransformComponent.class).getPosition());
         this.debugLabels.get("health").setText("Player Health: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("hp"));
         this.debugLabels.get("mana").setText("Player Mana: " + Game.em.getPlayer().getComponent(StatsComponent.class).getObservableStat("mp"));
+        this.debugLabels.get("game mode").setText("Game Mode: " + Game.gameMode.toString().toLowerCase());
     }
 
     /**

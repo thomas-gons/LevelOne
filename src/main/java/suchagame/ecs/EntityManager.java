@@ -1,6 +1,5 @@
 package suchagame.ecs;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import suchagame.ecs.component.Component;
 import suchagame.ecs.component.StatsComponent;
@@ -21,6 +20,7 @@ public class EntityManager {
                 Item.class,
                 MapEntity.class,
                 Player.class,
+                Projectile.class,
                 NPC.class,
                 Mob.class
         );
@@ -177,6 +177,15 @@ public class EntityManager {
      */
     public void removeAllEntities() {
         this.entities.clear();
+    }
+
+
+    public Object getMetaDataInModel(Class<? extends Entity> entityClass, String tag, String key) {
+        return model.getMetadata(entityClass, tag, key);
+    }
+
+    public void toggleFlagInModel(Class<? extends Entity> entityClass, String tag, String key) {
+        model.toggleFlag(entityClass, tag, key);
     }
 }
 

@@ -34,19 +34,19 @@ public class PhysicSystem {
         if (!entity.hasComponent(PhysicComponent.class))
             return true;
 
-        // With the no clip flag, the entity can go through walls but not the map boundaries
-        FlagComponent flagComponent = entity.getComponent(FlagComponent.class);
-        if (flagComponent != null && flagComponent.getFlag("noClip")) {
-            return !(entityPosition.getX() < 0 || entityPosition.getY() < 0 ||
-                entityPosition.getX() > Game.width || entityPosition.getY() > Game.height);
-        }
-
         // Get the physics component and the bounding box of the entity
         PhysicComponent physicComponent = entity.getComponent(PhysicComponent.class);
         BoundingBox hitBox = Utils.translateHitBox(entityPosition, physicComponent.getHitBox());
 
         // Check for collision with nearby entities
         checkCollisionWithNearbyEntities(entity, hitBox);
+
+        // With the no clip flag, the entity can go through walls but not the map boundaries
+        FlagComponent flagComponent = entity.getComponent(FlagComponent.class);
+        if (flagComponent != null && flagComponent.getFlag("noClip")) {
+            return !(entityPosition.getX() < 0 || entityPosition.getY() < 0 ||
+                entityPosition.getX() > Game.width || entityPosition.getY() > Game.height);
+        }
 
         // Check for collision with the map boundaries
         return mapCheckCollision(entity, hitBox, entityPosition);

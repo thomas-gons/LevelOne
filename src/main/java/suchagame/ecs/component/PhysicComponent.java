@@ -31,13 +31,21 @@ public class PhysicComponent extends Component {
     }
 
     /**
-     * Constructs a PhysicComponent object with the specified hit box and mass.
-     * @param hitBox the hit box of the entity
+     * Constructs a PhysicComponent object with helper values for the hit box, mass and velocity.
+     * @param width the width of the hit box
+     * @param height the height of the hit box
+     * @param offsetX the x offset of the hit box
+     * @param offsetY the y offset of the hit box
      * @param mass the mass of the entity
+     * @param baseVelocity the base velocity of the entity
      */
-    public PhysicComponent(BoundingBox hitBox, float mass) {
-        this.hitBox = hitBox;
-        this.mass = mass;
+    public PhysicComponent(
+            int width, int height,
+            int offsetX, int offsetY,
+            float mass, float[] baseVelocity) {
+
+        this(width, height, offsetX, offsetY, mass);
+        this.velocity = new Vector2f(baseVelocity[0], baseVelocity[1]);
     }
 
     public BoundingBox getHitBox() {

@@ -1,13 +1,9 @@
 package suchagame.ecs.entity;
 
-import suchagame.ecs.Model;
 import suchagame.ecs.component.Component;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Base class for all entities.
@@ -57,22 +53,23 @@ public abstract class Entity {
 
     public static class EntityModel {
         private Constructor<?> entityConstructor;
-        private Object[] entityConstructorArgs;
+        private Map<String, Object> entityConstructorArgs;
         private List<Component.ComponentModel> components = new ArrayList<>();
-
         public Constructor<?> getEntityConstructor() {
             return entityConstructor;
         }
+
+        public Set<Class<? extends Component>> dynamicComponents = new HashSet<>();
 
         public void setEntityConstructor(Constructor<?> entityConstructor) {
             this.entityConstructor = entityConstructor;
         }
 
-        public Object[] getEntityConstructorArgs() {
+        public Map<String, Object> getEntityConstructorArgs() {
             return entityConstructorArgs;
         }
 
-        public void setEntityConstructorArgs(Object[] entityConstructorArgs) {
+        public void setEntityConstructorArgs(Map<String, Object> entityConstructorArgs) {
             this.entityConstructorArgs = entityConstructorArgs;
         }
 
@@ -95,6 +92,17 @@ public abstract class Entity {
 
         public void addComponent(Component.ComponentModel component) {
             this.components.add(component);
+        }
+
+        public void addDynamicComponent(Class<? extends Component> componentClass) {
+            this.dynamicComponents.add(componentClass);
+        }
+        public HashSet<Class<? extends Component>> getDynamicComponents() {
+            return (HashSet<Class<? extends Component>>) this.dynamicComponents;
+        }
+
+        public boolean hasDynamicComponent(Class<? extends Component> componentClass) {
+            return this.dynamicComponents.contains(componentClass);
         }
     }
 }

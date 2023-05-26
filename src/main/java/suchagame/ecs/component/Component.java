@@ -1,6 +1,7 @@
 package suchagame.ecs.component;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 /**
  * Abstract class for components.
@@ -9,13 +10,13 @@ public abstract class Component {
     public static class ComponentModel {
         private Class<? extends Component> componentClass;
         private Constructor<? extends Component> componentConstructor;
-        private Object[] componentConstructorArgs;
+        private Map<String, Object> componentConstructorArgs;
         private int dependenciesCount;
 
         public ComponentModel(
                 Class<? extends Component> componentClass,
                 Constructor<? extends Component> componentConstructor,
-                Object[] componentConstructorArgs,
+                Map<String, Object> componentConstructorArgs,
                 int dependenciesCount)
         {
 
@@ -29,32 +30,16 @@ public abstract class Component {
             return componentClass;
         }
 
-        public void setComponentClass(Class<? extends Component> componentClass) {
-            this.componentClass = componentClass;
-        }
-
         public Constructor<? extends Component> getComponentConstructor() {
             return componentConstructor;
         }
 
-        public void setComponentConstructor(Constructor<? extends Component> componentConstructor) {
-            this.componentConstructor = componentConstructor;
-        }
-
-        public Object[] getComponentConstructorArgs() {
+        public Map<String, Object> getComponentConstructorArgs() {
             return componentConstructorArgs;
-        }
-
-        public void setComponentConstructorArgs(Object[] componentConstructorArgs) {
-            this.componentConstructorArgs = componentConstructorArgs;
         }
 
         public int getDependenciesCount() {
             return dependenciesCount;
-        }
-
-        public void setDependenciesCount(int dependenciesCount) {
-            this.dependenciesCount = dependenciesCount;
         }
     }
 }

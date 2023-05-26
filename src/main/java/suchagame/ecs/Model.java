@@ -4,7 +4,9 @@ import org.yaml.snakeyaml.Yaml;
 import suchagame.Main;
 import suchagame.ecs.component.Component;
 import suchagame.ecs.component.Dependency;
+import suchagame.ecs.component.FlagComponent;
 import suchagame.ecs.entity.Entity;
+import suchagame.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +47,7 @@ public class Model {
 
             Entity.EntityModel entityModel = new Entity.EntityModel();
             entityModel.setEntityConstructor(baseClass.getConstructors()[0]);
-            entityModel.setEntityConstructorArgs(new Object[entityModel.getEntityConstructor().getParameterCount()]);
+            entityModel.setEntityConstructorArgs(new LinkedHashMap<>());
 
             // metadata are the arguments for the entity constructor
             if (entityData.containsKey("metadata")) {
@@ -70,19 +72,33 @@ public class Model {
         models.put(baseClass, entityModels);
     }
 
+    @SuppressWarnings("unchecked")
     private void initMetaData(Map<String, Object> metaData, Entity.EntityModel entityModel) {
         int i = 0;
-        Object[] entityConstructorArgs = entityModel.getEntityConstructorArgs();
+        Map<String, Object> entityConstructorArgs = entityModel.getEntityConstructorArgs();
         Type[] genericTypes = entityModel.getEntityConstructor().getGenericParameterTypes();
         for (Map.Entry<String, Object> arg: metaData.entrySet()) {
+            if (arg.getKey().equals("dynamicComponents")) {
+                List<String> dynamicComponents = (ArrayList<String>) arg.getValue();
+                for (String component : dynamicComponents) {
+                    try {
+                        entityModel.addDynamicComponent((Class<? extends Component>)
+                                Class.forName("suchagame.ecs.component." + component + "Component"));
+
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                continue;
+            }
             try {
                 ParameterizedType genericType = (ParameterizedType) genericTypes[i];
                 Type[] typeArguments = genericType.getActualTypeArguments();
-                entityConstructorArgs[i] = castValueGeneric(arg.getValue(), typeArguments);
+                entityConstructorArgs.put(arg.getKey(), castValueGeneric(arg.getValue(), typeArguments));
                 i++;
                 continue;
             } catch (ClassCastException ignore) {}
-            entityConstructorArgs[i] = castValue(arg.getValue(), entityModel.getEntityConstructor().getParameterTypes()[i]);
+            entityConstructorArgs.put(arg.getKey(), castValue(arg.getValue(), entityModel.getEntityConstructor().getParameterTypes()[i]));
             i++;
         }
     }
@@ -101,22 +117,21 @@ public class Model {
         List<Component.ComponentModel> dependencies = new ArrayList<>();
         Constructor<?> componentConstructor = findConstructor(componentClass, dependencies, componentDataTypes, entityModel);
         assert componentConstructor != null;
-        Object[] componentConstructorArgs = new Object[componentConstructor.getParameterCount()];
+        Map<String, Object> componentConstructorArgs = new LinkedHashMap<>();
 
-        int i = 0;
-        for (; i < dependencies.size(); i++)
-            componentConstructorArgs[i] = dependencies.get(i);
+        for (Component.ComponentModel dependency : dependencies)
+            componentConstructorArgs.put(dependency.getComponentClass().getSimpleName(), dependency);
 
+        int i = dependencies.size();
         Type[] genericTypes = componentConstructor.getGenericParameterTypes();
         for (Map.Entry<String, Object> entry : componentData.entrySet()) {
             try {
                 ParameterizedType genericType = (ParameterizedType) genericTypes[i];
                 Type[] typeArguments = genericType.getActualTypeArguments();
-                componentConstructorArgs[i] = castValueGeneric(entry.getValue(), typeArguments);
-                i++;
+                componentConstructorArgs.put(entry.getKey(), castValueGeneric(entry.getValue(), typeArguments));
                 continue;
             } catch (ClassCastException ignore) {}
-            componentConstructorArgs[i] = castValue(entry.getValue(), componentConstructor.getParameterTypes()[i]);
+            componentConstructorArgs.put(entry.getKey(), castValue(entry.getValue(), componentConstructor.getParameterTypes()[i]));
             i++;
         }
 
@@ -148,23 +163,21 @@ public class Model {
                     dependencies.add(entityModel.getComponent((Class<? extends Component>) dependenciesClass));
             }
             int dependenciesCount = dependencies.size();
-            if (constructor.getParameterCount() == componentDataTypes.size() + dependenciesCount) {
+                if ((constructor.getParameterCount() == componentDataTypes.size() + dependenciesCount &&
+                        !entityModel.hasDynamicComponent(componentClass)) ||
+                    ((constructor.getParameterCount() == componentDataTypes.size() + dependenciesCount + 1) &&
+                        entityModel.hasDynamicComponent(componentClass))) {
+
                 boolean isRightConstructor = true;
                 for (int i = 0; i < componentDataTypes.size(); i++) {
                     Class<?> expectedType = constructor.getParameterTypes()[i + dependenciesCount];
                     Class<?> currentType = componentDataTypes.get(i);
 
-                    if (!currentType.equals(expectedType)) {
-                        if (!currentType.isPrimitive()) {
-                            try {
-                                Object currentTypePrimitive = currentType.getField("TYPE").get(null);
-                                if (currentTypePrimitive.equals(expectedType)) {
-                                    continue;
-                                }
-                            } catch (NoSuchFieldException | IllegalAccessException ignored) {}
-                        }
+                    currentType = Utils.getPrimitiveType(currentType);
 
-                        if (currentType.isAssignableFrom(Double.class) && expectedType.isAssignableFrom(float.class)) {
+                    if (!currentType.equals(expectedType)) {
+
+                        if (currentType.isAssignableFrom(double.class) && expectedType.isAssignableFrom(float.class)) {
                             continue;
                         } else if (currentType.isAssignableFrom(String.class) && expectedType.isEnum()) {
                             continue;
@@ -182,29 +195,46 @@ public class Model {
                 }
             }
         }
-        return null;
+        throw new RuntimeException("No suitable constructor found for component " + componentClass.getName());
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <T> T castValue(Object value, Class<T> targetType) {
+    private Object castValue(Object value, Class<?> targetType) {
+        targetType = Utils.getPrimitiveType(targetType);
+
         if (targetType.isInstance(value) && !targetType.isInterface()) {
             return targetType.cast(value);
-        } else if (targetType == int.class && value instanceof Number) {
-            return (T) Integer.valueOf(((Number) value).intValue());
-        } else if ((targetType == float.class || targetType == Float.class) && value instanceof Number) {
-            return (T) Float.valueOf(((Number) value).floatValue());
-        } else if (targetType == double.class && value instanceof Number) {
-            return (T) Double.valueOf(((Number) value).doubleValue());
-        } else if (targetType.isEnum() && value instanceof String) {
+        }
+
+        else if (targetType == int.class && value instanceof Number) {
+            return ((Number) value).intValue();
+
+        }
+
+        else if ((targetType == float.class) && value instanceof Number) {
+            return ((Number) value).floatValue();
+        }
+
+        else if (targetType == double.class && value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+
+        else if (targetType == boolean.class && value instanceof Boolean) {
+            return value;
+        }
+
+        else if (targetType.isEnum() && value instanceof String) {
             value = ((String) value).toUpperCase();
-            return (T) Enum.valueOf((Class<? extends Enum>) targetType, (String) value);
-        } else if (targetType.isArray() && value instanceof ArrayList<?> list) {
+            return Enum.valueOf((Class<? extends Enum>) targetType, (String) value);
+        }
+
+        else if (targetType.isArray() && value instanceof ArrayList<?> list) {
             Class<?> componentType = targetType.getComponentType();
             Object array = Array.newInstance(componentType, list.size());
             for (int i = 0; i < list.size(); i++) {
                 Array.set(array, i, castValue(list.get(i), componentType));
             }
-            return (T) array;
+            return array;
         }
         throw new IllegalArgumentException("Cannot cast " + value + " to " + targetType);
     }
@@ -231,16 +261,25 @@ public class Model {
         if (entityModel == null) {
             throw new IllegalArgumentException("No model for " + entityClass);
         }
+        HashSet<Class<? extends Component>> dynamicComponents = entityModel.getDynamicComponents();
+
         try {
-            Entity entity = (Entity) entityModel.getEntityConstructor().newInstance(entityModel.getEntityConstructorArgs());
+            Entity entity = (Entity) entityModel.getEntityConstructor().newInstance(
+                    entityModel.getEntityConstructorArgs().values().toArray()
+            );
+
             for (Component.ComponentModel componentModel : entityModel.getComponents()) {
-                Object[] componentConstructorArgs = componentModel.getComponentConstructorArgs();
+                Map<String, Object> componentConstructorArgs = componentModel.getComponentConstructorArgs();
+                // add entity as last argument thus we should increase the array size
+                if (dynamicComponents.contains(componentModel.getComponentClass())) {
+                    componentConstructorArgs.put(entityClass.getSimpleName(), entity);
+                }
                 // load eventual component dependencies
                 for (int i = 0; i < componentModel.getDependenciesCount(); i++) {
                     Class<?> dependencyClass = componentModel.getComponentConstructor().getParameterTypes()[i];
-                    componentConstructorArgs[i] = entity.getComponent((Class<? extends Component>) dependencyClass);
+                    componentConstructorArgs.put(dependencyClass.getSimpleName(), entity.getComponent((Class<? extends Component>) dependencyClass));
                 }
-                Component component = componentModel.getComponentConstructor().newInstance(componentConstructorArgs);
+                Component component = componentModel.getComponentConstructor().newInstance(componentConstructorArgs.values().toArray());
                 entity.addComponent(component);
             }
             return entity;
@@ -252,5 +291,20 @@ public class Model {
 
     public String[] getTags(Class<? extends Entity> entityClass) {
         return models.get(entityClass).keySet().toArray(new String[0]);
+    }
+
+    public Object getMetadata(Class<? extends Entity> entityClass, String tag, String key) {
+        return models.get(entityClass).get(tag).getEntityConstructorArgs().get(key);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void toggleFlag(Class<? extends Entity> entityClass, String tag, String flag) {
+        Entity.EntityModel entityModel = models.get(entityClass).get(tag);
+        if (entityModel == null) {
+            throw new IllegalArgumentException("No model for " + entityClass);
+        }
+        Map<String, Object> args = entityModel.getComponent(FlagComponent.class).getComponentConstructorArgs();
+        Map<String, Boolean> flags = (Map<String, Boolean>) args.get("flags");
+        flags.put(flag, !((boolean) flags.getOrDefault(flag, false)));
     }
 }

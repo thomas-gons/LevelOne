@@ -3,6 +3,8 @@ package suchagame.ecs.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import suchagame.ui.Game;
+
 /**
  * Base class for the player.
  */
@@ -12,14 +14,13 @@ public class Player extends Entity {
      * @see Item.ItemType
     */
     private final Map<Item.ItemType, Item> handItems = new HashMap<>();
-    private static String deathCause;
+    private static String deathCause = "";
 
     public Player(Map<Item.ItemType, String> handItems) {
         super();
         initHandItems();
         for (Map.Entry<Item.ItemType, String> entry : handItems.entrySet()) {
-            Item item = new Item(entry.getValue(), entry.getKey(), 0);
-            this.handItems.put(entry.getKey(), item);
+            this.handItems.put(entry.getKey(), Game.em.getItem(entry.getValue()));
         }
     }
 

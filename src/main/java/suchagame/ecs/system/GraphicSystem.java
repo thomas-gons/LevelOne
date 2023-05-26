@@ -88,7 +88,7 @@ public class GraphicSystem extends System {
             // If the entity is in the viewport, we render it
             if (viewport.intersects(new BoundingBox(
                     position.getX(),
-                    position.getY(),
+                    position.getY() - boundingBox.getHeight(),
                     boundingBox.getWidth(),
                     boundingBox.getHeight()
             ))) {
