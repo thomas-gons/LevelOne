@@ -111,4 +111,10 @@ public class StatsSystem extends System {
         regenTimeline.setCycleCount(Timeline.INDEFINITE);
         regenTimeline.play();
     }
+
+
+   public static void resetStatsState(Map<String, Float> previousStatsState) {
+        Map<String, Float> playerFlags = Game.em.getPlayer().getComponent(StatsComponent.class).getStats();
+        playerFlags.putAll(previousStatsState);
+    }
 }

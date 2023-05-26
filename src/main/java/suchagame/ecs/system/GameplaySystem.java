@@ -10,7 +10,9 @@ import suchagame.utils.Timer;
 import suchagame.utils.Vector2f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is responsible for the gameplay logic.
@@ -114,6 +116,27 @@ public class GameplaySystem extends System {
         Item item = player.getHandItem(Item.ItemType.CONSUMABLE);
         // check if the player has the item in his inventory
         if (inventory.getItemAmount(item.getTag()) > 0) {
+            if (item.getDuration() > 0) {
+                Map<String, Float> previousStatsState = new HashMap<>();
+                Map<String, Float> playerStats = player.getComponent(StatsComponent.class).getStats();
+                for (Map.Entry<String, Float> entry : item.getComponent(StatsComponent.class).getStats().entrySet()) {
+                    previousStatsState.put(entry.getKey(), playerStats.get(entry.getKey()));
+                }
+
+                Map<String, Boolean> previousFlagsState = new HashMap<>();
+                if (item.hasComponent(FlagComponent.class)) {
+                    Map<String, Boolean> playerFlags = player.getComponent(FlagComponent.class).getFlags();
+                    for (Map.Entry<String, Boolean> entry : item.getComponent(FlagComponent.class).getFlags().entrySet()) {
+                        previousFlagsState.put(entry.getKey(), playerFlags.get(entry.getKey()));
+                    }
+                }
+
+
+                new Timer(item.getDuration(), () -> {
+                    StatsSystem.resetStatsState(previousStatsState);
+                    FlagSystem.resetFlagsState(previousFlagsState);
+                });
+            }
             StatsSystem.useConsumable(Game.em.getPlayer(), item);
             InventorySystem.consumeItem(item);
             // update the consumable item amount in the HUD

@@ -183,8 +183,11 @@ public class Model {
                             continue;
                         } else if (currentType.isAssignableFrom(ArrayList.class) && expectedType.isArray()) {
                             continue;
-                        } else if (currentType.isAssignableFrom(LinkedHashMap.class) && expectedType.isAssignableFrom(Map.class))
+                        } else if (currentType.isAssignableFrom(LinkedHashMap.class) && expectedType.isAssignableFrom(Map.class)) {
                             continue;
+                        } else if (currentType.isAssignableFrom(int.class) && expectedType.isAssignableFrom(Long.class)) {
+                            continue;
+                        }
 
                         isRightConstructor = false;
                         break;
@@ -219,9 +222,14 @@ public class Model {
             return ((Number) value).doubleValue();
         }
 
+        else if (targetType == long.class && value instanceof Number) {
+            return ((Integer) value).longValue();
+        }
+
         else if (targetType == boolean.class && value instanceof Boolean) {
             return value;
         }
+
 
         else if (targetType.isEnum() && value instanceof String) {
             value = ((String) value).toUpperCase();

@@ -12,18 +12,21 @@ public class Item extends Entity {
     private final String tag;
     private final ItemType type;
     private final int slimeDropValue;
+    private final long duration;
 
     /**
-     * Constructs an Item object with the specified tag, type, slime drop value, and stats.
+     * Constructs an Item object with the specified tag, type, slime drop value, stats, and duration.
      * @param tag the tag of the item
      * @param type the type of the item
      * @param slimeDropValue the amount of slime that the item drops when destroyed
+     * @param duration the duration of the item
      */
-    public Item(String tag, ItemType type, int slimeDropValue) {
+    public Item(String tag, ItemType type, int slimeDropValue, long duration) {
         super();
         this.tag = tag;
         this.type = type;
         this.slimeDropValue = slimeDropValue;
+        this.duration = duration;
     }
 
     public String getTag() {
@@ -46,5 +49,9 @@ public class Item extends Entity {
         CONSUMABLE, // temporary stats boost items or simple consumables
         SPELL,      // items that can be cast
         MISC        // miscellaneous items
+    }
+
+    public long getDuration() {
+        return this.duration;
     }
 }
