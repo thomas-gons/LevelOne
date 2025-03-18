@@ -1,30 +1,58 @@
+# 📜 Projet Level One - Moteur de jeu RPG 2D
+
 ## Introduction
 
-I've tried to make a generic game thus I see it more as a game engine than a real game.
-The game is a top-down 2D game and a RPG-like game with an ECS architecture. All the basics features are implemented: 
-movement, collision (just with map), interaction, inventory, spells, artefacts, consumables, enemies, etc.
-Besides, I've tried to make the game as generic as possible so that it is easy to add new features. And 
-I've tried to use advanced programming techniques such as design patterns, callbacks, reflection (but not implemented in this version),
-genericity, etc. 
+Le projet Level One consiste à développer le premier niveau d'un jeu vidéo en 2D utilisant Java et JavaFX.L’objectif est de proposer une expérience interactive où le joueur incarne un personnage évoluant dans un environnement défini, affrontant des ennemis, interagissant avec des PNJ et manipulant divers objets.
 
+Ce projet est construit avec une architecture ECS (Entity-Component-System), une approche modulaire qui sépare les entités (objets du jeu), les composants (leurs caractéristiques) et les systèmes (la logique du jeu). Cette structure permet une meilleure flexibilité, performance et extensibilité.
 
-## How to play
+Les fonctionnalités de base sont implémentées :
 
-- z q s d for movement
-- a to interact with npc to buy consumables by clicking on them
-- e to cast spell if you have enough mana; projectiles direction is the same as the player's
-- & to switch between artefacts
-- é t to switch between spells
-- " to switch between consumables
-- b to consume a consumable
+- [X] Déplacement et collisions (uniquement avec la carte)
 
+- [X] Interaction avec les PNJ et l'environnement
 
-- F3 to toggle debug mode
-- F4 to toggle hit boxes
-- space to toggle light
+- [X] Gestion d'inventaire (consommables, artefacts, sorts)
 
+- [X] Ennemis et combat
 
-## Aim
+L'objectif principal était de rendre le jeu aussi générique que possible pour faciliter l'ajout de nouvelles fonctionnalités, tout en explorant des concepts avancés tels que les design patterns, les callbacks et la généricité.
 
-As it is more a game engine than a real game, the victory condition is very simple: kill all the enemies.
-Concerning the defeat condition, it is when the player die by losing all his health points or by falling into the void (e.g. holes).
+## Aperçus
+
+![Interface principale](src/main/resources/suchagame/screenshots/main.png)
+*Interface principale du jeu.*
+
+![Carte complète](src/main/resources/suchagame/screenshots/full_map.png)
+*Carte complète*
+
+![Mode Debug](src/main/resources/suchagame/screenshots/debug.png)
+*Vue en mode debug*
+
+![Boutique](src/main/resources/suchagame/screenshots/shop.png)
+*Boutique*
+---
+
+## 🎮 Commandes
+
+| Action | Touche |
+|--------|--------|
+| Déplacement | **Z Q S D** |
+| Interagir avec un PNJ / Acheter un consommable | **A** (en cliquant sur l'objet) |
+| Lancer un sort (si suffisamment de mana) | **E** (la direction du projectile suit celle du joueur) |
+| Changer d'artefact | **&** |
+| Changer de sort | **É** ou **T** |
+| Changer de consommable | **"** |
+| Consommer un objet | **B** |
+| Activer/Désactiver le mode debug | **F3** |
+| Afficher/Masquer les hitboxes | **F4** |
+| Activer/Désactiver l’éclairage | **Espace** |
+
+---
+
+## Objectif
+
+Le but du jeu est simple : **éliminer tous les ennemis**.  
+Le joueur perd la partie s'il :
+- Perd tous ses points de vie
+- Tombe dans le vide (ex. : trous dans la carte)  
